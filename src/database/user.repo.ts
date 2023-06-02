@@ -6,9 +6,9 @@ export const checkDuplicateNickname = async (nickName: string): Promise<User> =>
   try {
     const [row]: any = await db.query(
       `
-        SELECT *
-        FROM user
-        WHERE nickname = ?`,
+          SELECT *
+          FROM user
+          WHERE nickname = ?`,
       [nickName]
     );
 
@@ -20,13 +20,13 @@ export const checkDuplicateNickname = async (nickName: string): Promise<User> =>
 };
 
 // userId 입력시 user 정보 추출
-export const getUserInfoById = async (userId: string): Promise<User> => {
+export const getUserInfoById = async (userId: Number): Promise<User> => {
   try {
     const [row]: any = await db.query(
       `
-    SELECT *
-    FROM user
-    WHERE user_id = ? and delete_flag ='0'`,
+        SELECT *
+        FROM user
+        WHERE user_id = ? and delete_flag ='0'`,
       [userId]
     );
     return row[0];
@@ -45,12 +45,12 @@ export const createUser = async (inputData: createUserInput): Promise<User> => {
       .join(', ');
     const [newUser]: any = await db.query(
       `
-          INSERT INTO user (${newColumns})
-          VALUES (${newValues})
+        INSERT INTO user (${newColumns})
+        VALUES (${newValues})
       `
     );
 
-    const createUserId = String(inputData.id);
+    const createUserId = Number(inputData.id);
 
     const createuser = await getUserInfoById(createUserId);
 
@@ -62,7 +62,7 @@ export const createUser = async (inputData: createUserInput): Promise<User> => {
 };
 
 // 유저 정보 수정
-export const updateUser = async (userId: string, updates: Partial<User>): Promise<User> => {
+export const updateUser = async (userId: Number, updates: Partial<User>): Promise<User> => {
   try {
     const updateValues = Object.entries(updates)
       .map(([key, value]) => {
@@ -75,10 +75,10 @@ export const updateUser = async (userId: string, updates: Partial<User>): Promis
 
     await db.query(
       `
-      UPDATE user
-      SET ${updateValues}
-      WHERE user_id = ?
-    `,
+        UPDATE user
+        SET ${updateValues}
+        WHERE user_id = ?
+      `,
       [userId]
     );
 
