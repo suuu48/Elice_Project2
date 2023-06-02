@@ -3,7 +3,7 @@ import * as scheduleService from '../services/schedule.service';
 /* 팀별 일정 조회 */
 export const getAllScheduleHandler = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const category = Number(req.query.category);
+        const category = Number(req.params.category);
 
         const teams = await scheduleService.getTeamByCategory(category);
         const schedules = await scheduleService.scheduleByCategory(category);
