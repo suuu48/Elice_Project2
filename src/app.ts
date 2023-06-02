@@ -1,24 +1,23 @@
-import express, { Request, Response } from 'express';
+import express from 'express';
 import { env } from './config/envconfig';
+import { db } from './config/dbconfig';
+import { v1Router } from './routes';
 
 const port = Number(env.PORT);
 const app = express();
 
-interface test {
-  title: string;
-  content: string;
-}
+db.getConnection()
+  .then(async () => {
+    console.log('✅ mysql2 로 DB 접속!');
 
-const test: test = {
-  title: 'test',
-  content: 'typescript-server',
-};
+    app.listen(port, () => {
+      console.log('DB_HOST:', env.DB_HOST);
+      console.log('DB_NAME:', env.DB_DBNAME);
+      console.log(`Server is running on port ${port}`);
+    });
+  })
+  .catch((err) => console.log('error!!!!!!!', err));
 
-app.get('/', (req: Request, res: Response) => {
-  res.send(test);
-});
+app.use(express.json());
 
-app.listen(port, () => {
-  console.log('PORT:', env.PORT);
-  console.log(`Server is running on port ${port}`);
-});
+app.use('/api/v1', v1Router);
