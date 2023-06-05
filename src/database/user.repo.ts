@@ -26,7 +26,7 @@ export const getUserInfoById = async (userId: Number): Promise<User> => {
       `
         SELECT *
         FROM user
-        WHERE user_id = ? and delete_flag ='0'`,
+        WHERE id = ?`,
       [userId]
     );
     return row[0];
@@ -77,7 +77,7 @@ export const updateUser = async (userId: Number, updates: Partial<User>): Promis
       `
         UPDATE user
         SET ${updateValues}
-        WHERE user_id = ?
+        WHERE id = ?
       `,
       [userId]
     );
