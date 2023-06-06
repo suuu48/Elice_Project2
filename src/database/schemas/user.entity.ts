@@ -21,7 +21,7 @@ export type createUserInput = {
     img: string;
 };
 
-export type updateUserInput = Partial<Omit<createUserInput, 'user_id'>>;
+export type updateUserInput = Partial<Pick<createUserInput, 'nickname' | 'phone' | 'interest' | 'img'>>;
 
 @Entity()
 export class User {
