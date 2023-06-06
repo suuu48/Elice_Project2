@@ -52,9 +52,9 @@ export const createUser = async (inputData: createUserInput): Promise<User> => {
 
     const createUserId = Number(inputData.id);
 
-    const createuser = await getUserInfoById(createUserId);
+    const createUser = await getUserInfoById(createUserId);
 
-    return createuser!;
+    return createUser!;
   } catch (error) {
     console.log(error);
     return Promise.reject(error);
@@ -92,13 +92,14 @@ export const updateUser = async (userId: number, updates: Partial<User>): Promis
 };
 
 // 유저 정보 hard delete
-export const hardDeleteUser = async (userId: number): Promise<void> => {
+export const hardDeleteUser = async (userId: number): Promise<number> => {
   try {
     await db.query(
       `DELETE FROM user
        WHERE id = ?`,
       [userId]
     );
+    return userId;
   } catch (error) {
     console.log(error);
     throw new Error('[ DB 에러 ] 유저 hard 삭제 실패');
