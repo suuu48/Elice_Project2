@@ -41,7 +41,7 @@ export const getScheduleByTeamHandler = async (req: Request, res: Response, next
 export const getScheduleByDayHandler = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const day = req.params.day;
-    console.log(req.params.day);
+
     const schedules = await scheduleService.scheduleByDay(day);
 
     res.status(200).json({ message: '날짜 별 일정 목록 조회 성공', data: schedules });
