@@ -92,7 +92,7 @@ export const updateUser = async (userId: number, updates: Partial<User>): Promis
 };
 
 // 유저 정보 hard delete
-export const hardDeleteUser = async (userId: string): Promise<void> => {
+export const hardDeleteUser = async (userId: number): Promise<void> => {
   try {
     await db.query(
       `DELETE FROM user
