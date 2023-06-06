@@ -4,7 +4,7 @@ export type UserProfile = {
     id: number;
     email: string;
     nickname: string;
-    interest: string;
+    interest: number;
     phone: string;
     role: boolean;
     img: string;
@@ -15,7 +15,7 @@ export type createUserInput = {
     email: string;
     password: string;
     nickname: string;
-    interest: string;
+    interest: number;
     phone: string;
     role: boolean;
     img: string;
