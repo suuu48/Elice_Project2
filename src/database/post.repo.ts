@@ -51,6 +51,38 @@ export const findPostsByCategory = async (category: number): Promise<any> => {
   }
 };
 
+// 유저가 작성한 글 전체 조회
+export const findPostsByUser = async (userId: number): Promise<any> => {
+    try {
+        const [row]: any = await db.query(
+            `SELECT p.id, p.category, p.title, p.created_at, p.views 
+           FROM post p
+           WHERE p.user_id = ? AND p.report <= 5`,
+            [userId]
+        );
+        return row;
+    } catch (error) {
+        console.log(error);
+        throw new Error('[ DB 에러 ] 유저 별 게시글 목록 조회 실패');
+    }
+};
+
+// 유저가 작성한 글 종목 별조회
+export const findPostsByUserAndCategory = async (userId: number, category: number): Promise<any> => {
+    try {
+        const [row]: any = await db.query(
+            `SELECT p.id, p.category, p.title, p.created_at, p.views 
+           FROM post p
+           WHERE p.user_id = ? AND p.category => And p.report <= 5`,
+            [userId, category]
+        );
+        return row;
+    } catch (error) {
+        console.log(error);
+        throw new Error('[ DB 에러 ] 게시글 목록 조회 실패');
+    }
+};
+
 //게시글 글 상세 조회
 export const findPostById = async (postId: number): Promise<any> => {
   try {
