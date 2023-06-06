@@ -7,6 +7,7 @@ export const findAllPostsByCreated = async (): Promise<any[]> => {
     const [row]: any = await db.query(
       `SELECT  id, category, title, created_at, views 
            FROM post
+           WHERE AND p.report <= 5
            ORDER BY created_at DESC LIMIT 5`
     );
     return row;
@@ -22,7 +23,7 @@ export const findPostsByCreated = async (category: number): Promise<any[]> => {
     const [row]: any = await db.query(
       `SELECT id, title, views
             FROM post 
-           WHERE category = ?
+           WHERE category = ? AND p.report <= 5
            ORDER BY created_at DESC LIMIT 5`,
       [category]
     );
@@ -33,14 +34,14 @@ export const findPostsByCreated = async (category: number): Promise<any[]> => {
   }
 };
 
-// 카테고리 별 게시글 글 목록 조회
+// 카테고리 별 게시글 목록 조회
 export const findPostsByCategory = async (category: number): Promise<any> => {
   try {
     const [row]: any = await db.query(
       `SELECT p.id, p.title, p.created_at, u.nickname, p.views 
            FROM post p
            JOIN user u ON p.user_id= u.id
-           WHERE category = ?`,
+           WHERE category = ? AND p.report <= 5`,
       [category]
     );
     return row;
@@ -51,13 +52,13 @@ export const findPostsByCategory = async (category: number): Promise<any> => {
 };
 
 //게시글 글 상세 조회
-export const findPostsById = async (postId: number): Promise<any> => {
+export const findPostById = async (postId: number): Promise<any> => {
   try {
     const [row]: any = await db.query(
       `SELECT p.id, p.title, p.category, p.created_at, u.nickname, p.views 
            FROM post p
            JOIN user u ON p.user_id= u.id
-           WHERE p.id = ?`,
+           WHERE p.id = ? AND p.report <= 5`,
       [postId]
     );
     return row[0];
@@ -121,26 +122,42 @@ export const updatePost = async (postId: number, updateData: updatePostInput): P
   }
 };
 
-// 게시글 수정
-export const reportPost = async (postId: number, updateData: updatePostInput): Promise<any> => {
+// 게시글 신고
+export const reportPost = async (postId: number): Promise<any> => {
   try {
-    const [keys, values] = updateDataTrans(updateData);
-    const [updatePost]: any = await db.query(
+    const [reportPost]: any = await db.query(
       ` UPDATE post
-              SET ${keys.join(', ')}
+              SET report = report + 1
               WHERE id = ?`,
-      [...values, postId]
+      [postId]
     );
 
-    return updatePost!;
+    return reportPost!;
   } catch (error) {
     console.log(error);
-    throw new Error('[ DB 에러 ] 게시글 수정 실패');
+    throw new Error('[ DB 에러 ] 게시글 신고 실패');
   }
 };
 
+// 게시글 조회수 증가
+export const viewPost = async (postId: number): Promise<any> => {
+    try {
+        const [viewPost]: any = await db.query(
+            ` UPDATE post
+              SET views = views + 1
+              WHERE id = ?`,
+            [postId]
+        );
+
+        return viewPost!;
+    } catch (error) {
+        console.log(error);
+        throw new Error('[ DB 에러 ] 게시글 조회수 증가 실패');
+    }
+};
+
 // 게시글 삭제
-const deletePost = async (postId: number): Promise<number> => {
+export const deletePost = async (postId: number): Promise<number> => {
   try {
     const [deletePost]: any = await db.query(
       `DELETE FROM post
