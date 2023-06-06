@@ -8,5 +8,5 @@ scheduleRoute.get('/:category', scheduleController.getAllScheduleHandler);
 // 팀 별 경기 일정 조회
 scheduleRoute.get('/:category/team', scheduleController.getScheduleByTeamHandler);
 
-// 일 별 경기 일정 조회
+// 날짜 별 경기 일정 조회
 scheduleRoute.get('/day/:day', scheduleController.getScheduleByDayHandler);
