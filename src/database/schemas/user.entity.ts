@@ -21,6 +21,8 @@ export type createUserInput = {
     img: string;
 };
 
+export type updateUserInput = Partial<Omit<createUserInput, 'user_id'>>;
+
 @Entity()
 export class User {
     @PrimaryGeneratedColumn()
