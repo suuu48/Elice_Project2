@@ -2,11 +2,11 @@ import { db } from '../config/dbconfig';
 import { createCommentInput } from './schemas/comment.entity';
 
 //콘텐츠에 해당하는 댓글 목록 조회 (id는 비디오나 게시글의 id)
-export const findCommentByContent = async (videoOrPost: number, id: number): Promise<any> => {
+export const findByContents = async (contents_category: number, id: number): Promise<any> => {
   try {
     let whereColumns: string;
     // 동영상일지 게시글일지 !
-    if (videoOrPost === 0) {
+    if (contents_category === 0) {
       // 0일 경우 비디오 1일 경우 게시글
       whereColumns = 'c.video_id';
     } else {
@@ -27,11 +27,11 @@ export const findCommentByContent = async (videoOrPost: number, id: number): Pro
 };
 
 //콘텐츠에 해당하는 댓글 수 조회 (id는 비디오나 게시글의 id)
-export const findCountByContent = async (videoOrPost: number, id: number): Promise<any> => {
+export const findCountByContent = async (contents_category: number, id: number): Promise<any> => {
   try {
     let whereColumns: string;
     // 동영상일지 게시글일지 !
-    if (videoOrPost === 0) {
+    if (contents_category === 0) {
       // 0일 경우 비디오 1일 경우 게시글
       whereColumns = 'c.video_id';
     } else {
@@ -72,13 +72,13 @@ export const findCommentById = async (commentId: number): Promise<any> => {
 
 // 댓글 등록
 export const createComment = async (
-  videoOrPost: number,
+  contents_category: number,
   inputData: createCommentInput
 ): Promise<number> => {
   try {
     let createColumns: string;
     // 동영상일지 게시글일지 !
-    if (videoOrPost === 0) {
+    if (contents_category === 0) {
       // 0일 경우 비디오 1일 경우 게시글
       createColumns = 'user_id, video_id, content';
     } else {
@@ -105,7 +105,7 @@ export const createComment = async (
 };
 
 // 댓글 삭제
-const deleteComment = async (commentId: number): Promise<number> => {
+export const deleteComment = async (commentId: number): Promise<number> => {
   try {
     const [deleteComment]: any = await db.query(
       `DELETE FROM comment
@@ -121,11 +121,14 @@ const deleteComment = async (commentId: number): Promise<number> => {
 };
 
 // 컨텐츠에 해당하는 댓글 전체 삭제 (id는 비디오나 게시글의 id)
-const deleteCommentByContents = async (videoOrPost: number, id: number): Promise<number> => {
+export const deleteCommentByContents = async (
+  contents_category: number,
+  id: number
+): Promise<number> => {
   try {
     let whereColumns: string;
     // 동영상일지 게시글일지 !
-    if (videoOrPost === 0) {
+    if (contents_category === 0) {
       // 0일 경우 비디오 1일 경우 게시글
       whereColumns = 'video_id';
     } else {
@@ -160,5 +163,22 @@ export const isCommentIdValid = async (commentId: number): Promise<boolean> => {
   } catch (error) {
     console.log(error);
     throw new Error('[ DB 에러 ] 댓글 유효성 검사 실패');
+  }
+};
+
+// 댓글 신고
+export const reportComment = async (commentId: number): Promise<any> => {
+  try {
+    const [reportComment]: any = await db.query(
+      ` UPDATE post
+              SET report = report + 1
+              WHERE id = ?`,
+      [commentId]
+    );
+
+    return reportComment!;
+  } catch (error) {
+    console.log(error);
+    throw new Error('[ DB 에러 ] 댓글 신고 실패');
   }
 };
