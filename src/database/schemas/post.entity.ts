@@ -12,7 +12,4 @@ interface PostProfile {
 export type Post = PostProfile;
 export type createPostInput = Omit<PostProfile, 'id' | 'created_at' | 'views' | 'nickname'>;
 
-export type updatePostInput = Omit<
-  Partial<PostProfile>,
-  'id' | 'created_at' | 'views' | 'nickname'
->;
+export type updatePostInput = Omit<Partial<PostProfile>, 'id' | 'user_id' | 'category' | 'created_at' | 'views' | 'nickname'>;
