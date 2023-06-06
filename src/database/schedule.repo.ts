@@ -76,7 +76,7 @@ export const findCountByDay = async (): Promise<any[]> => {
   }
 };
 
-// 일별 경기 일정 조회
+// 날짜 별 경기 일정 조회
 export const findScheduleByDay = async (day: string): Promise<any[]> => {
   try {
     const [row]: any = await db.query(
@@ -84,9 +84,10 @@ export const findScheduleByDay = async (day: string): Promise<any[]> => {
        FROM schedule s
        JOIN team t1 ON s.team1 = t1.id
        JOIN team t2 ON s.team2 = t2.id
-       WHERE DATE(s.start_time) = ?
+       WHERE (DATE_FORMAT(s.start_time, '%Y%m%d') = ? OR DATE_FORMAT(s.start_time, '%Y-%m-%d') = ?)
+       OR (DATE_FORMAT(s.start_time, '%Y%m') = ? OR DATE_FORMAT(s.start_time, '%Y-%m') = ?)
        order by start_time;`,
-      [day]
+      [day, day, day, day]
     );
 
     return row;
