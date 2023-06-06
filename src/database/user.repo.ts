@@ -90,3 +90,17 @@ export const updateUser = async (userId: number, updates: Partial<User>): Promis
     throw error;
   }
 };
+
+// 유저 정보 hard delete
+export const hardDeleteUser = async (userId: string): Promise<void> => {
+  try {
+    await db.query(
+      `DELETE FROM user
+       WHERE id = ?`,
+      [userId]
+    );
+  } catch (error) {
+    console.log(error);
+    throw new Error('[ DB 에러 ] 유저 hard 삭제 실패');
+  }
+};
