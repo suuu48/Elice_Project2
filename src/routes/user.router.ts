@@ -9,4 +9,4 @@ userRoute.get('/:email', userController.getUserInfo);
 userRoute.post('/:email', userController.updateUserHandler);
 
 // 유저 정보 삭제
-userRoute.delete('/:email', userController.deleteUserHandler);
+userRoute.delete('/:email', userController.hardDeleteUserHandler);
