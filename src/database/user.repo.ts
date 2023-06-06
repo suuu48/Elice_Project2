@@ -19,15 +19,15 @@ export const checkDuplicateNickname = async (nickName: string): Promise<User> =>
   }
 };
 
-// userId 입력시 user 정보 추출
-export const getUserInfoById = async (userId: Number): Promise<User> => {
+// email 입력시 user 정보 추출
+export const getUserInfoById = async (id: Number): Promise<User> => {
   try {
     const [row]: any = await db.query(
       `
       SELECT *
       FROM user
       WHERE id = ?`,
-      [userId]
+      [id]
     );
     return row[0];
   } catch (error) {
