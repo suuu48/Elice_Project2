@@ -20,7 +20,7 @@ export const checkDuplicateNickname = async (nickName: string): Promise<User> =>
 };
 
 // email 입력시 user 정보 추출
-export const getUserInfoById = async (id: Number): Promise<User> => {
+export const getUserInfoById = async (id: number): Promise<User> => {
   try {
     const [row]: any = await db.query(
       `
@@ -62,7 +62,7 @@ export const createUser = async (inputData: createUserInput): Promise<User> => {
 };
 
 // 유저 정보 수정
-export const updateUser = async (userId: Number, updates: Partial<User>): Promise<User> => {
+export const updateUser = async (userId: number, updates: Partial<User>): Promise<User> => {
   try {
     const updateValues = Object.entries(updates)
       .map(([key, value]) => {
