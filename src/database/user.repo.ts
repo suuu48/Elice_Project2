@@ -6,9 +6,9 @@ export const checkDuplicateNickname = async (nickName: string): Promise<User> =>
   try {
     const [row]: any = await db.query(
       `
-          SELECT *
-          FROM user
-          WHERE nickname = ?`,
+      SELECT *
+      FROM user
+      WHERE nickname = ?`,
       [nickName]
     );
 
@@ -24,9 +24,9 @@ export const getUserInfoById = async (userId: Number): Promise<User> => {
   try {
     const [row]: any = await db.query(
       `
-        SELECT *
-        FROM user
-        WHERE id = ?`,
+      SELECT *
+      FROM user
+      WHERE id = ?`,
       [userId]
     );
     return row[0];
@@ -45,8 +45,8 @@ export const createUser = async (inputData: createUserInput): Promise<User> => {
       .join(', ');
     const [newUser]: any = await db.query(
       `
-        INSERT INTO user (${newColumns})
-        VALUES (${newValues})
+      INSERT INTO user (${newColumns})
+      VALUES (${newValues})
       `
     );
 
@@ -75,9 +75,9 @@ export const updateUser = async (userId: Number, updates: Partial<User>): Promis
 
     await db.query(
       `
-        UPDATE user
-        SET ${updateValues}
-        WHERE id = ?
+      UPDATE user
+      SET ${updateValues}
+      WHERE id = ?
       `,
       [userId]
     );
