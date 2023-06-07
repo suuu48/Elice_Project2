@@ -7,7 +7,6 @@ import { Post, createPostInput, updatePostInput } from '../database/schemas/post
 export const getPostsMain = async (category: number): Promise<any[]> => {
   try {
     const posts = await postRepo.findPostsByCreated(category);
-
     if (posts === undefined) throw new Error('[ 최신글 조회 에러 ] 게시글 조회 실패');
 
     return posts;
@@ -97,7 +96,9 @@ export const editPost = async (post_id: number, updateData: updatePostInput): Pr
     const updatePost = await postRepo.updatePost(post_id, updateData);
     if (updatePost === undefined) throw new AppError(404, '수정된 게시글이 없습니다.');
 
-    return updatePost;
+    const post = await postRepo.findPostById(post_id);
+
+    return post;
   } catch (error: any) {
     if (error instanceof AppError) {
       if (error.statusCode === 500) console.log(error);

@@ -7,7 +7,7 @@ export const findAllPostsByCreated = async (): Promise<any[]> => {
     const [row]: any = await db.query(
       `SELECT  id, category, title, created_at, views 
            FROM post
-           WHERE AND p.report <= 5
+           WHERE report <= 5
            ORDER BY created_at DESC LIMIT 5`
     );
     return row;
@@ -23,7 +23,7 @@ export const findPostsByCreated = async (category: number): Promise<any[]> => {
     const [row]: any = await db.query(
       `SELECT id, title, views
             FROM post 
-           WHERE category = ? AND p.report <= 5
+           WHERE category = ? AND report <= 5
            ORDER BY created_at DESC LIMIT 5`,
       [category]
     );
@@ -35,13 +35,13 @@ export const findPostsByCreated = async (category: number): Promise<any[]> => {
 };
 
 // 카테고리 별 게시글 목록 조회
-export const findPostsByCategory = async (category: number): Promise<any> => {
+export const findPostsByCategory = async (category: number): Promise<any[]> => {
   try {
     const [row]: any = await db.query(
       `SELECT p.id, p.title, p.created_at, u.nickname, p.views 
            FROM post p
            JOIN user u ON p.user_id= u.id
-           WHERE category = ? AND p.report <= 5`,
+           WHERE p.category = ? AND p.report <= 5`,
       [category]
     );
     return row;
@@ -51,11 +51,43 @@ export const findPostsByCategory = async (category: number): Promise<any> => {
   }
 };
 
+// 유저가 작성한 글 전체 조회
+export const findPostsByUser = async (userId: number): Promise<any> => {
+    try {
+        const [row]: any = await db.query(
+            `SELECT p.id, p.category, p.title, p.created_at, p.views 
+           FROM post p
+           WHERE p.user_id = ? AND p.report <= 5`,
+            [userId]
+        );
+        return row;
+    } catch (error) {
+        console.log(error);
+        throw new Error('[ DB 에러 ] 유저 별 게시글 목록 조회 실패');
+    }
+};
+
+// 유저가 작성한 글 종목 별 조회
+export const findPostsByUserAndCategory = async (userId: number, category: number): Promise<any> => {
+    try {
+        const [row]: any = await db.query(
+            `SELECT p.id, p.category, p.title, p.created_at, p.views 
+           FROM post p
+           WHERE p.user_id = ? AND p.category = ? And p.report <= 5`,
+            [userId, category]
+        );
+        return row;
+    } catch (error) {
+        console.log(error);
+        throw new Error('[ DB 에러 ] 게시글 목록 조회 실패');
+    }
+};
+
 //게시글 글 상세 조회
 export const findPostById = async (postId: number): Promise<any> => {
   try {
     const [row]: any = await db.query(
-      `SELECT p.id, p.title, p.category, p.created_at, u.nickname, p.views 
+      `SELECT p.id, p.title, p.content, p.category, p.created_at, u.nickname, p.views 
            FROM post p
            JOIN user u ON p.user_id= u.id
            WHERE p.id = ? AND p.report <= 5`,
@@ -104,7 +136,7 @@ export const updateDataTrans = (input: Record<string, string | number | boolean 
   return data;
 };
 
-// 게시글 수정 Todo: updated_at now()로 해야함
+// 게시글 수정
 export const updatePost = async (postId: number, updateData: updatePostInput): Promise<any> => {
   try {
     const [keys, values] = updateDataTrans(updateData);

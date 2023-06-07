@@ -18,8 +18,25 @@ export const checkDuplicateNickname = async (nickName: string): Promise<User> =>
     throw error;
   }
 };
+// 이메일 중복 체크
+export const checkDuplicateEmail = async (email: string): Promise<any> => {
+  try {
+    const [row]: any = await db.query(
+        `
+      SELECT *
+      FROM user
+      WHERE email =?`,
+        [email]
+    );
 
-// email 입력시 user 정보 추출
+    return row[0];
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
+// id 입력시 user 정보 추출
 export const getUserInfoById = async (id: number): Promise<User> => {
   try {
     const [row]: any = await db.query(
@@ -37,9 +54,9 @@ export const getUserInfoById = async (id: number): Promise<User> => {
 };
 
 // 유저 추가
-export const createUser = async (inputData: createUserInput): Promise<User> => {
+export const createUser = async (inputData: createUserInput): Promise<number> => {
   try {
-    const newColumns = 'id, email, password, nickname, interest, phone, role, img';
+    const newColumns = 'email, password, nickname, interest, phone, img';
     const newValues = Object.values(inputData)
       .map((value) => (typeof value === 'string' ? `'${value}'` : value))
       .join(', ');
@@ -50,11 +67,8 @@ export const createUser = async (inputData: createUserInput): Promise<User> => {
       `
     );
 
-    const createUserId = Number(inputData.id);
-
-    const createuser = await getUserInfoById(createUserId);
-
-    return createuser!;
+    const createdUserId = (newUser as { insertId: number }).insertId;
+    return createdUserId!;
   } catch (error) {
     console.log(error);
     return Promise.reject(error);
@@ -91,16 +105,17 @@ export const updateUser = async (userId: number, updates: Partial<User>): Promis
   }
 };
 
-// 유저 정보 hard delete
-export const hardDeleteUser = async (userId: number): Promise<void> => {
+// 유저 삭제
+export const hardDeleteUser = async (userId: number): Promise<number> => {
   try {
     await db.query(
       `DELETE FROM user
        WHERE id = ?`,
       [userId]
     );
+    return userId;
   } catch (error) {
     console.log(error);
-    throw new Error('[ DB 에러 ] 유저 hard 삭제 실패');
+    throw new Error('[ DB 에러 ] 유저 삭제 실패');
   }
 };

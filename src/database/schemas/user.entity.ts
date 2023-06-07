@@ -3,16 +3,6 @@ import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 export type UserProfile = {
     id: number;
     email: string;
-    nickname: string;
-    interest: number;
-    phone: string;
-    role: boolean;
-    img: string;
-};
-
-export type createUserInput = {
-    id: number;
-    email: string;
     password: string;
     nickname: string;
     interest: number;
@@ -21,7 +11,8 @@ export type createUserInput = {
     img: string;
 };
 
-export type updateUserInput = Partial<Pick<createUserInput, 'nickname' | 'phone' | 'interest' | 'img'>>;
+export type createUserInput = Partial<Omit<UserProfile, 'id' | 'role' >>;
+export type updateUserInput = Partial<Pick<UserProfile, 'nickname' | 'phone' | 'interest' | 'img'>>;
 
 @Entity()
 export class User {
