@@ -5,13 +5,13 @@ import * as User from '../database/schemas/user.entity';
 // 유저 정보 조회
 export const getUserInfo = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const userId = Number(req.params);
+    const userId = Number(req.params.user_id);
 
     if (!userId) throw new Error('[ 요청 에러 ] 아이디를 반드시 입력해야 합니다.');
 
     const userInfo = await userService.getUser(userId);
 
-    res.status(201).json({ message: '유저 정보 조회 성공', data: userInfo });
+    res.status(200).json({ message: '유저 정보 조회 성공', data: userInfo });
   } catch (error: any) {
     console.log('유저 정보 조회 실패');
     throw error;
@@ -21,12 +21,13 @@ export const getUserInfo = async (req: Request, res: Response, next: NextFunctio
 // 유저 정보 수정
 export const updateUserHandler = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const userId = Number(req.params); // user.id는 number니까
+    const userId = Number(req.params.user_id);  
     const imgFileRoot = `http://localhost:3000/api/v1/static/${req.file?.filename}`;
 
     if (!userId) throw new Error('[ 요청 에러 ] 아이디를 반드시 입력해야 합니다.');
 
     const { nickname, phone, interest, img } = req.body;
+    console.log(nickname, phone, interest, img);
 
     if (!nickname && !phone && !interest && !img)
       throw new Error('[ 요청 에러 ] 변경된 값이 없습니다!');
@@ -50,11 +51,11 @@ export const updateUserHandler = async (req: Request, res: Response, next: NextF
 // 유저 삭제
 export const hardDeleteUserHandler = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const userId = Number(req.params);
-    if (!userId) throw new Error('[요청 에러] 사용자 아이디를 반드시 입력해야 합니다.');
+    const userId = Number(req.params.user_id);
+    // if (!userId) throw new Error('[요청 에러] 사용자 아이디를 반드시 입력해야 합니다.');
 
-    const deleteId = await userService.hardDelete(userId);
-    res.status(200).json({ message: '유저 삭제 성공', data: deleteId });
+    await userService.hardDelete(userId);
+    res.status(200).json({ message: '계정 삭제 성공' });
   } catch (error: any) {
     console.log('계정 삭제 실패');
     throw error;

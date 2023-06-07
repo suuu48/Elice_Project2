@@ -98,7 +98,7 @@ export const updateUser = async (userId: number, updates: Partial<User>): Promis
 
     const updatedUser = await getUserInfoById(userId);
 
-    return updatedUser!;
+    return updatedUser;
   } catch (error) {
     console.log(error);
     throw error;

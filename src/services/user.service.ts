@@ -48,13 +48,13 @@ const editImage = async (userId: number, inputData: updateUserInput) => {
   if (foundUser.img && foundUser.img !== inputData.img) {
     const imgFileName = foundUser.img.split('/')[6];
 
-    const filePath = `/Users/subin/IdeaProjects/peeps_back-end3/public/${imgFileName}`;
+    const filePath = `/Users/bbaec/OneDrive/바탕 화면/Penone_project/back/imgs/${imgFileName}`;
     // const filePath = `서버 실행하는 로컬의 public 파일 절대경로`;
     // const filePath = `클라우드 인스턴스 로컬의 public 파일 절대경로`;
 
-    fs.unlink(filePath, (error) => {
-      if (error) throw new Error('유저 이미지 수정 중 오류가 발생했습니다.');
-    });
+    // fs.unlink(filePath, (error) => {
+    //   if (error) throw new Error('유저 이미지 수정 중 오류가 발생했습니다.');
+    // });
   } else return;
 };
 
