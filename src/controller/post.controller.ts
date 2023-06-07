@@ -70,7 +70,7 @@ export const getPostHandler = async (req: Request, res: Response, next: NextFunc
 // 게시글 등록
 export const addPostHandler = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const user_id = Number(req.params);
+    const {user_id} = req.params;
     const { category, title, content } = req.body;
 
     if (user_id === null) throw new AppError(400, '회원 ID를 입력해주세요.');
@@ -79,12 +79,12 @@ export const addPostHandler = async (req: Request, res: Response, next: NextFunc
       throw new AppError(400, '요청 body에 모든 정보를 입력해주세요.');
 
     const postData: createPostInput = {
-      user_id,
+      user_id: Number(user_id),
       category,
       title,
       content,
     };
-
+    console.log(postData);
     const createPost = await postService.addPost(postData);
 
     res.status(200).json({ message: '게시글 등록성공', data: createPost });
@@ -102,7 +102,7 @@ export const addPostHandler = async (req: Request, res: Response, next: NextFunc
 // 게시글 수정
 export const editPostHandler = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const post_id = Number(req.params);
+    const {post_id} = req.params;
     const { title, content } = req.body;
 
     if (post_id === undefined) throw new AppError(400, 'post_id를 입력해주세요.');
@@ -112,7 +112,7 @@ export const editPostHandler = async (req: Request, res: Response, next: NextFun
       content,
     };
 
-    const updatedPost = await postService.editPost(post_id, postData);
+    const updatedPost = await postService.editPost(Number(post_id), postData);
 
     res.status(200).json({ message: '게시글 수정 성공', data: updatedPost });
   } catch (error: any) {
@@ -125,14 +125,15 @@ export const editPostHandler = async (req: Request, res: Response, next: NextFun
     }
   }
 };
+
 // 게시글 삭제
 export const removePostHandler = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const post_id = Number(req.params);
+    const {post_id }= req.params;
 
     if (post_id === undefined) throw new AppError(400, 'post_id를 입력해주세요.');
 
-    const deletedPost = await postService.removePost(post_id);
+    const deletedPost = await postService.removePost(Number(post_id));
 
     res.status(200).json({ message: '게시글 삭제 성공', data: { post_id: deletedPost } });
   } catch (error: any) {
@@ -149,7 +150,7 @@ export const removePostHandler = async (req: Request, res: Response, next: NextF
 // 게시글 신고
 export const reportPostHandler = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const post_id = Number(req.params);
+    const post_id = Number(req.params.post_id);
 
     if (post_id === undefined) throw new AppError(400, 'post_id를 입력해주세요.');
 
