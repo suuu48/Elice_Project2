@@ -4,25 +4,24 @@ import { createUserInput } from '../database/schemas/user.entity';
 import bcrypt from 'bcrypt';
 import * as userRepo from '../database/user.repo';
 import { AppError } from '../../../back/src/utils/errorHandler';
-import {checkDuplicateEmail, checkDuplicateNickname} from "../database/user.repo";
-import {addUser} from "../services/auth.service";
 
 // 유저 추가
 export const addUserHandler = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { email, password, nickname, interest, phone } = req.body;
+        const { email, password, nickname, interest, phone, img } = req.body;
         // const imgFileRoot = `http://localhost:3000/api/v1/static/${req.file?.filename}`;
-        if (!email || !password || !nickname || !interest || !phone)
-            throw new Error('[ 요청 에러 ] 사진을 제외한 모든 필드를 입력해야 합니다.');
+        if (!email || !password || !nickname || !interest || !phone || !img)
+            throw new Error('[ 요청 에러 ] 111사진을 제외한 모든 필드를 입력해야 합니다.');
+
         const isCheckId = await userRepo.checkDuplicateEmail(email);
 
-        if (isCheckId) {
-            throw Error('이 아이디는 현재 사용중입니다. 다른 아이디를 입력해 주세요.');
+        if (isCheckId!==undefined) {
+            throw Error('이 이메일는 현재 사용중입니다. 다른 이메일를 입력해 주세요.');
         }
 
         // 닉네임 중복체크
         const isCheckNickname = await userRepo.checkDuplicateNickname(nickname);
-        if (isCheckNickname) {
+        if (isCheckNickname!==undefined) {
             throw Error('이 닉네임은 현재 사용중입니다. 다른 닉네임을 입력해 주세요.');
         }
 
@@ -34,7 +33,8 @@ export const addUserHandler = async (req: Request, res: Response, next: NextFunc
             nickname,
             interest,
             phone,
-            //user_img: imgFileRoot,
+            img,
+            //img: imgFileRoot,
         };
 
         const createdUser = await authService.addUser(userData);
@@ -53,12 +53,13 @@ export const addUserHandler = async (req: Request, res: Response, next: NextFunc
 // 로그인
 export const logIn = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { id, password } = req.body;
-
-        if (!id || !password)
+        const { email, password } = req.body;
+        console.log(email);
+        console.log(password);
+        if (!email || !password)
             throw new Error('[ 요청 에러 ] 아이디와 비밀번호를 반드시 입력해야 합니다.');
 
-        const checkId = await userRepo.checkDuplicateEmail(id);
+        const checkId = await userRepo.checkDuplicateEmail(email);
         if (!checkId) {
             throw Error('해당 아이디는 가입 내역이 없습니다. 다른 아이디를 입력해 주세요.');
         }
