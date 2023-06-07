@@ -1,4 +1,5 @@
 import express from 'express';
+import { userRoute } from './user.router';
 import { scheduleRoute } from './schedule.router';
 import { teamRoute } from './team.router';
 import { rankRoute } from './rank.router';
@@ -7,7 +8,7 @@ import { commentRoute } from './comment.router';
 
 export const v1Router = express.Router();
 
-// v1Router.use('/user', userRoute);
+v1Router.use('/user', userRoute);
 v1Router.use('/post', postRoute);
 v1Router.use('/comment', commentRoute);
 v1Router.use('/schedule', scheduleRoute);

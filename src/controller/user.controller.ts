@@ -6,13 +6,13 @@ import * as userRepo from '../database/user.repo';
 // 유저 정보 조회
 export const getUserInfo = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const userId = Number(req.params);
+    const userId = Number(req.params.user_id);
 
     if (!userId) throw new Error('[ 요청 에러 ] 아이디를 반드시 입력해야 합니다.');
 
     const userInfo = await userService.getUser(userId);
 
-    res.status(201).json({ message: '유저 정보 조회 성공', data: userInfo });
+    res.status(200).json({ message: '유저 정보 조회 성공', data: userInfo });
   } catch (error: any) {
     console.log('유저 정보 조회 실패');
     throw error;
@@ -55,7 +55,7 @@ export const hardDeleteUserHandler = async (req: Request, res: Response, next: N
     if (!userId) throw new Error('[요청 에러] 사용자 아이디를 반드시 입력해야 합니다.');
 
     await userService.hardDelete(userId);
-    res.status(200).json({ message: 'User hard delete succeeded' });
+    res.status(200).json({ message: '계정 삭제 성공' });
   } catch (error: any) {
     console.log('계정 삭제 실패');
     throw error;
