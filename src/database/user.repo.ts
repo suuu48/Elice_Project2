@@ -29,7 +29,7 @@ export const checkDuplicateEmail = async (email: string): Promise<any> => {
         [email]
     );
 
-    return row;
+    return row[0];
   } catch (error) {
     console.log(error);
     throw error;
@@ -56,7 +56,7 @@ export const getUserInfoById = async (id: number): Promise<User> => {
 // 유저 추가
 export const createUser = async (inputData: createUserInput): Promise<number> => {
   try {
-    const newColumns = 'email, password, nickname, interest, phone';
+    const newColumns = 'email, password, nickname, interest, phone, img';
     const newValues = Object.values(inputData)
       .map((value) => (typeof value === 'string' ? `'${value}'` : value))
       .join(', ');
@@ -105,7 +105,7 @@ export const updateUser = async (userId: number, updates: Partial<User>): Promis
   }
 };
 
-// 유저 정보 delete
+// 유저 삭제
 export const hardDeleteUser = async (userId: number): Promise<number> => {
   try {
     await db.query(
@@ -116,6 +116,6 @@ export const hardDeleteUser = async (userId: number): Promise<number> => {
     return userId;
   } catch (error) {
     console.log(error);
-    throw new Error('[ DB 에러 ] 유저 hard 삭제 실패');
+    throw new Error('[ DB 에러 ] 유저 삭제 실패');
   }
 };
