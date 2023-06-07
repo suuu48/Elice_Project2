@@ -23,6 +23,24 @@ export const getComment = async (comment_id: number): Promise<any[]> => {
   }
 };
 
+// 댓글 목록 조회
+export const getCommentList = async (contents_category: number, comment_id: number): Promise<any[]> => {
+  try {
+
+    const comments = await commentRepo.findByContents(contents_category,comment_id);
+    if (comments === undefined) throw new AppError(404, '해당 댓글이 없습니다.');
+
+    return comments;
+  } catch (error: any) {
+    if (error instanceof AppError) {
+      if (error.statusCode === 500) console.log(error);
+      throw error;
+    } else {
+      console.log(error);
+      throw new AppError(500, '[ 서버 에러 ] 댓글 목록 조회 실패');
+    }
+  }
+};
 // 댓글 등록
 export const addComment = async (
   contents_category: number,
