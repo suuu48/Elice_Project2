@@ -22,7 +22,25 @@ export const getCommentHandler = async (req: Request, res: Response, next: NextF
     }
   }
 };
+// 댓글 목록 조회
+export const getCommentListHandler = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const id = Number(req.params.id);
+    if (id === null) throw new AppError(400, 'ID를 입력해주세요.');
+    const {contents_category }= req.body.contents_category;
+    const comments = await commentService.getCommentList(contents_category,id)
 
+    res.status(200).json({ message: '댓글 상세 조회 성공', data: comments });
+  } catch (error: any) {
+    if (error instanceof AppError) {
+      if (error.statusCode === 404 || error.statusCode === 400) console.log(error);
+      next(error);
+    } else {
+      console.log(error);
+      next(new AppError(500, '[ HTTP 요청 에러 ] 댓글 조회 실패'));
+    }
+  }
+};
 // 댓글 등록
 export const addCommentHandler = async (req: Request, res: Response, next: NextFunction) => {
   try {
