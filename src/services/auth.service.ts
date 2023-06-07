@@ -35,8 +35,7 @@ export const getUserToken = async (userId: number): Promise<any> => {
 
     const payload = {
       userId: user.id,
-      password: user.password,
-      role: user.role,
+      password: user.password
     };
 
     const accessToken = jwt.sign(payload, accessTokenSecret, {
