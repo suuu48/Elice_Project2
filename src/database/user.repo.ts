@@ -18,8 +18,25 @@ export const checkDuplicateNickname = async (nickName: string): Promise<User> =>
     throw error;
   }
 };
+// 이메일 중복 체크
+export const checkDuplicateEmail = async (email: string): Promise<any> => {
+  try {
+    const [row]: any = await db.query(
+        `
+      SELECT *
+      FROM user
+      WHERE email =?`,
+        [email]
+    );
 
-// email 입력시 user 정보 추출
+    return row;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
+// id 입력시 user 정보 추출
 export const getUserInfoById = async (id: number): Promise<User> => {
   try {
     const [row]: any = await db.query(
@@ -37,9 +54,9 @@ export const getUserInfoById = async (id: number): Promise<User> => {
 };
 
 // 유저 추가
-export const createUser = async (inputData: createUserInput): Promise<User> => {
+export const createUser = async (inputData: createUserInput): Promise<number> => {
   try {
-    const newColumns = 'id, email, password, nickname, interest, phone, role, img';
+    const newColumns = 'email, password, nickname, interest, phone';
     const newValues = Object.values(inputData)
       .map((value) => (typeof value === 'string' ? `'${value}'` : value))
       .join(', ');
@@ -50,11 +67,8 @@ export const createUser = async (inputData: createUserInput): Promise<User> => {
       `
     );
 
-    const createUserId = Number(inputData.id);
-
-    const createUser = await getUserInfoById(createUserId);
-
-    return createUser!;
+    const createdUserId = (newUser as { insertId: number }).insertId;
+    return createdUserId!;
   } catch (error) {
     console.log(error);
     return Promise.reject(error);
@@ -91,7 +105,7 @@ export const updateUser = async (userId: number, updates: Partial<User>): Promis
   }
 };
 
-// 유저 정보 hard delete
+// 유저 정보 delete
 export const hardDeleteUser = async (userId: number): Promise<number> => {
   try {
     await db.query(
