@@ -77,3 +77,20 @@ export const getPostByUserHandler = async (req: Request, res: Response, next: Ne
     throw error;
   }
 };
+
+// 유저 shorts 조회
+export const getShortsByUserHandler = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = Number(req.params);
+    if (!userId) throw new Error('[요청 에러] 사용자 아이디를 반드시 입력해야 합니다.');
+
+    const category = Number(req.query.category);
+
+    const shorts = await userService.getPostsByUser(category, userId);
+
+    res.status(200).json({ message: '유저 shorts 조회 성공', data: shorts });
+  } catch (error: any) {
+    console.log('유저 shorts 조회 실패');
+    throw error;
+  }
+};

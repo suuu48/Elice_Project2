@@ -4,6 +4,7 @@ import { createUserInput, updateUserInput, User, UserProfile } from '../database
 import { env } from '../config/envconfig';
 import fs from 'fs';
 import * as postRepo from "../database/post.repo";
+import * as shortsRepo from "../database/shorts.repo";
 import {AppError} from "../utils/errorHandler";
 
 // 유저 정보 조회
@@ -91,6 +92,31 @@ export const getPostsByUser = async (category: number| undefined, userId: number
     } else {
       console.log(error);
       throw new AppError(500, '[ 서버 에러 ] 게시글 목록 조회 실패');
+    }
+  }
+};
+
+// 유저가 작성한 쇼츠 목록 조회
+export const getShortsByUser = async (category: number| undefined, userId: number): Promise<any[]> => {
+  try {
+    let shorts;
+
+    if (category === undefined) {
+      shorts = await shortsRepo.findShortsByUser(userId);
+    } else {
+      shorts = await shortsRepo.findShortsByUserAndCategory(userId, category);
+    }
+
+    if (shorts === undefined) throw new Error('[ shorts 조회 에러 ] shorts 목록 조회 실패');
+
+    return shorts;
+  } catch (error: any) {
+    if (error instanceof AppError) {
+      if (error.statusCode === 500) console.log(error);
+      throw error;
+    } else {
+      console.log(error);
+      throw new AppError(500, '[ 서버 에러 ] shorts 목록 조회 실패');
     }
   }
 };
