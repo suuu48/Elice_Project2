@@ -7,6 +7,7 @@ import { commentRoute } from './comment.router';
 import { scheduleRoute } from './schedule.router';
 import { rankRoute } from './rank.router';
 import { teamRoute } from './team.router';
+import { categoryRoute } from './category.router';
 export const v1Router = express.Router();
 
 v1Router.use('/auth', authRoute);
@@ -17,4 +18,4 @@ v1Router.use('/comment', commentRoute);
 v1Router.use('/schedule', scheduleRoute);
 v1Router.use('/rank', rankRoute);
 v1Router.use('/team', teamRoute);
-
+v1Router.use('/category', categoryRoute);
