@@ -44,10 +44,10 @@ export const getShortsHandler = async (req: Request, res: Response, next: NextFu
 // 쇼츠 등록
 export const addShortsHandler = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const user_id = Number(req.params);
+    const user_id = Number(req.params.user_id);
     const { category, title, src } = req.body;
 
-    if (user_id === null) throw new AppError(400, '회원 ID를 입력해주세요.');
+    if (!user_id) throw new AppError(400, '회원 ID를 입력해주세요.');
 
     if (!category || !title || !src)
       throw new AppError(400, '요청 body에 모든 정보를 입력해주세요.');
@@ -76,13 +76,13 @@ export const addShortsHandler = async (req: Request, res: Response, next: NextFu
 // 게시글 삭제
 export const removeShortsHandler = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const shorts_id = Number(req.params);
+    const shorts_id = Number(req.params.shorts_id);
 
-    if (shorts_id === undefined) throw new AppError(400, 'shorts_id를 입력해주세요.');
+    if (!shorts_id) throw new AppError(400, 'shorts_id를 입력해주세요.');
 
-    const deletedShorts = await shortsService.removeShorts(shorts_id);
+    const deletedShortsId = await shortsService.removeShorts(shorts_id);
 
-    res.status(200).json({ message: 'shorts 삭제 성공', data: { shorts_id: deletedShorts } });
+    res.status(200).json({ message: 'shorts 삭제 성공', data: { shorts_id: deletedShortsId } });
   } catch (error: any) {
     if (error instanceof AppError) {
       if (error.statusCode === 404 || error.statusCode === 400) console.log(error);
