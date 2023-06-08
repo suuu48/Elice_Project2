@@ -28,10 +28,10 @@ export const scheduleByTeam = async (teamId: number): Promise<any[]> => {
   }
 };
 
-// 팀별 일정 조회
-export const scheduleByDay = async (day: string): Promise<any[]> => {
+// 날짜 별 일정 조회
+export const scheduleByDay = async (day: string, category: number| undefined): Promise<any[]> => {
   try {
-    const schedules = await scheduleRepo.findScheduleByDay(day);
+     const schedules = await scheduleRepo.findScheduleByDay(day, category);
 
     if (schedules === undefined) throw new Error('[ 일정 조회 에러 ] 일정이 존재하지 않습니다.');
 
