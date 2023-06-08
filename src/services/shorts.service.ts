@@ -2,11 +2,11 @@ import * as shortsRepo from '../database/shorts.repo';
 import { AppError } from '../../../back/src/utils/errorHandler';
 import { createShortsInput } from '../database/schemas/shorts.entity';
 
-// 메인/카테고리별 쇼츠 목록 조회
+// 메인/카테고리별 쇼츠 목록 조회 Todo: 삼항연산자로 변경하기
 export const getShortsList = async (category: number | undefined): Promise<any[]> => {
   try {
     let shorts;
-    if (category === undefined) {
+    if (category === undefined || isNaN(category) ) {
       shorts = await shortsRepo.findShortsAll();
     } else {
       shorts = await shortsRepo.findShortsByCategory(category);
@@ -21,7 +21,7 @@ export const getShortsList = async (category: number | undefined): Promise<any[]
       throw error;
     } else {
       console.log(error);
-      throw new AppError(500, '[ 서버 에러 ] 댓글 목록 조회 실패');
+      throw new AppError(500, '[ 서버 에러 ] 쇼츠 목록 조회 실패');
     }
   }
 };
