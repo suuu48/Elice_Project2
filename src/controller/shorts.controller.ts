@@ -3,7 +3,7 @@ import * as shortsService from '../services/shorts.service';
 import { AppError } from '../../../back/src/utils/errorHandler';
 import { createShortsInput } from '../database/schemas/shorts.entity';
 
-// 쇼츠 목록 조회
+// 쇼츠 최신 순 목록 조회
 export const getShortsListHandler = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const category = Number(req.query.category);
