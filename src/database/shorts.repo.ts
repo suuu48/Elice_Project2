@@ -41,9 +41,10 @@ export const findShortsByUserAndCategory = async (
 export const findShortsAll = async (): Promise<any[]> => {
     try {
         const [row]: any = await db.query(
-            `SELECT v.id, v.title, v.src, u.img, u.nickname, v.views 
+            `SELECT v.id, v.title, v.src, u.img as user_img, u.nickname, v.views 
            FROM video v
-           JOIN user u ON v.user_id= u.id`
+           JOIN user u ON v.user_id= u.id
+           ORDER BY created_at`
         );
 
         return row;
@@ -56,10 +57,11 @@ export const findShortsAll = async (): Promise<any[]> => {
 export const findShortsByCategory = async (category: number): Promise<any[]> => {
     try {
         const [row]: any = await db.query(
-            `SELECT v.id, v.title, v.src, v.created_at, u.img, u.nickname, v.views
+            `SELECT v.id, v.title, v.src, u.img as user_img, u.nickname, v.views
              FROM video v
                       JOIN user u ON v.user_id= u.id
-             WHERE v.category = ?`,
+             WHERE v.category = ?
+             ORDER BY created_at`,
             [category]
         );
         return row;
@@ -73,12 +75,13 @@ export const findShortsByCategory = async (category: number): Promise<any[]> => 
 export const findShortsById = async (shortsId: number): Promise<any> => {
     try {
         const [row]: any = await db.query(
-            `SELECT v.id, v.title, v.category,v.src, v.created_at, u.img, u.nickname, v.views
+            `SELECT v.id, v.title, v.category,v.src, v.created_at, u.img as user_img, u.nickname, v.views
              FROM video v
-                      JOIN user u ON v.user_id= u.id
+             JOIN user u ON v.user_id= u.id
              WHERE v.id = ? `,
             [shortsId]
         );
+
         return row[0];
     } catch (error) {
         console.log(error);
@@ -147,7 +150,7 @@ export const isShortsIdValid = async (shortsId: number): Promise<boolean> => {
     try {
         const [countRows]: any = await db.query(
             `SELECT COUNT(*) AS count
-             FROM vidoe
+             FROM video
              WHERE id = ?`,
             [shortsId]
         );
