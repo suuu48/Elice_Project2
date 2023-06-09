@@ -1,5 +1,3 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
-
 // 미완료
 export type Schedule = {
     id: number;
