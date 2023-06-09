@@ -34,8 +34,9 @@ export const getUserToken = async (userId: number): Promise<any> => {
     const refreshTokenSecret = env.REFRESH_TOKEN_SECRET || 'default-refresh-token-secret';
 
     const payload = {
-      userId: user.id,
-      password: user.password
+      user_id: user.id,
+      email: user.email,
+      role: user.role
     };
 
     const accessToken = jwt.sign(payload, accessTokenSecret, {

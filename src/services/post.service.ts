@@ -88,10 +88,13 @@ export const addPost = async (inputData: createPostInput): Promise<any> => {
 };
 
 // 게시글 수정
-export const editPost = async (post_id: number, updateData: updatePostInput): Promise<any> => {
+export const editPost = async (post_id: number, updateData: updatePostInput, user_id: number): Promise<any> => {
   try {
     const isValid = await postRepo.isPostIdValid(post_id);
     if (isValid === false) throw new AppError(404, '존재하는 게시글이 없습니다.');
+
+    const isUser = await postRepo.findPostById(post_id);
+    if(isUser.user_id !==user_id) throw new AppError(403, '작성자만 수정 가능합니다.');
 
     const updatePost = await postRepo.updatePost(post_id, updateData);
     if (updatePost === undefined) throw new AppError(404, '수정된 게시글이 없습니다.');
@@ -111,16 +114,15 @@ export const editPost = async (post_id: number, updateData: updatePostInput): Pr
 };
 
 // 게시글 삭제
-export const removePost = async (post_id: number): Promise<any> => {
+export const removePost = async (post_id: number, user_id: number): Promise<number> => {
   try {
     const isValid = await postRepo.isPostIdValid(post_id);
     if (isValid === false) throw new AppError(404, '존재하는 게시글이 없습니다.');
 
-    const removedComment = await commentRepo.deleteCommentByContents(1, post_id);
-    if (removedComment === undefined) throw new AppError(404, '삭제된 댓글이 없습니다.');
+    const isUser = await postRepo.findPostById(post_id);
+    if(isUser.user_id !==user_id) throw new AppError(403, '작성자만 삭제 가능합니다.');
 
     const removedPostId = await postRepo.deletePost(post_id);
-    if (removedPostId === undefined) throw new AppError(404, '삭제된 게시글이 없습니다.');
 
     return removedPostId;
   } catch (error: any) {

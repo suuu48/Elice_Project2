@@ -11,18 +11,18 @@ export const addUserHandler = async (req: Request, res: Response, next: NextFunc
         const { email, password, nickname, interest, phone, img } = req.body;
         // const imgFileRoot = `http://localhost:3000/api/v1/static/${req.file?.filename}`;
         if (!email || !password || !nickname || !interest || !phone || !img)
-            throw new Error('[ 요청 에러 ] 111사진을 제외한 모든 필드를 입력해야 합니다.');
+            throw new AppError(400,'[ 요청 에러 ] 모든 필드를 입력해야 합니다.');
 
         const isCheckId = await userRepo.checkDuplicateEmail(email);
 
         if (isCheckId!==undefined) {
-            throw Error('이 이메일는 현재 사용중입니다. 다른 이메일를 입력해 주세요.');
+            throw new AppError(400,'이 이메일는 현재 사용중입니다. 다른 이메일를 입력해 주세요.');
         }
 
         // 닉네임 중복체크
         const isCheckNickname = await userRepo.checkDuplicateNickname(nickname);
         if (isCheckNickname!==undefined) {
-            throw Error('이 닉네임은 현재 사용중입니다. 다른 닉네임을 입력해 주세요.');
+            throw new AppError(400,'이 닉네임은 현재 사용중입니다. 다른 닉네임을 입력해 주세요.');
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -54,10 +54,9 @@ export const addUserHandler = async (req: Request, res: Response, next: NextFunc
 export const logIn = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { email, password } = req.body;
-        console.log(email);
-        console.log(password);
+
         if (!email || !password)
-            throw new Error('[ 요청 에러 ] 아이디와 비밀번호를 반드시 입력해야 합니다.');
+            throw new AppError(400,'[ 요청 에러 ] 아이디와 비밀번호를 반드시 입력해야 합니다.');
 
         const checkId = await userRepo.checkDuplicateEmail(email);
         if (!checkId) {
@@ -69,7 +68,7 @@ export const logIn = async (req: Request, res: Response, next: NextFunction) => 
         if (correctPasswordHash !== password) {
             const isPasswordCorrect = await bcrypt.compare(password, correctPasswordHash);
             if (!isPasswordCorrect) {
-                throw new Error('비밀번호가 일치하지 않습니다. 다시 한 번 확인해 주세요.');
+                throw new AppError(400,'비밀번호가 일치하지 않습니다. 다시 한 번 확인해 주세요.');
             }
         }
 

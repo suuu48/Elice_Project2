@@ -24,10 +24,12 @@ export const getComment = async (comment_id: number): Promise<any[]> => {
 };
 
 // 댓글 목록 조회
-export const getCommentList = async (contents_category: number, comment_id: number): Promise<any[]> => {
+export const getCommentList = async (
+  contents_category: number,
+  comment_id: number
+): Promise<any[]> => {
   try {
-
-    const comments = await commentRepo.findByContents(contents_category,comment_id);
+    const comments = await commentRepo.findByContents(contents_category, comment_id);
     if (comments === undefined) throw new AppError(404, '해당 댓글이 없습니다.');
 
     return comments;
@@ -41,6 +43,7 @@ export const getCommentList = async (contents_category: number, comment_id: numb
     }
   }
 };
+
 // 댓글 등록
 export const addComment = async (
   contents_category: number,
@@ -66,10 +69,13 @@ export const addComment = async (
 };
 
 // 댓글 삭제
-export const removeComment = async (comment_id: number): Promise<any> => {
+export const removeComment = async (comment_id: number, user_id: number): Promise<any> => {
   try {
     const isValid = await commentRepo.isCommentIdValid(comment_id);
     if (isValid === false) throw new AppError(404, '존재하는 댓글이 없습니다.');
+
+    const isUser = await commentRepo.findCommentById(comment_id);
+    if (isUser.user_id !== user_id) throw new AppError(403, '작성자만 삭제 가능합니다.');
 
     const removedCommentId = await commentRepo.deleteComment(comment_id);
 
@@ -92,11 +98,13 @@ export const reportComment = async (comment_id: number): Promise<any> => {
     if (isValid === false) throw new AppError(404, '존재하는 댓글이 없습니다.');
 
     const reportComment = await commentRepo.reportComment(comment_id);
+
     if (reportComment.affectedRows !== 1)
       throw new AppError(404, '해당 댓글의 신고 내역이 없습니다.');
 
     const reportedComment = await commentRepo.findCommentById(comment_id);
-    return reportedComment.id;
+
+    return reportedComment.comment_id;
   } catch (error: any) {
     if (error instanceof AppError) {
       if (error.statusCode === 500) console.log(error);

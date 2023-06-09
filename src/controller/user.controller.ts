@@ -1,14 +1,15 @@
 import { Request, Response, NextFunction } from 'express';
 import * as userService from '../services/user.service';
 import * as User from '../database/schemas/user.entity';
+import {removeUser} from "../services/user.service";
 
+// Todo: userId 에러처리!
 // 유저 정보 조회
 export const getUserInfo = async (req: Request, res: Response, next: NextFunction) => {
+  const userId = req.user.user_id;
+
   try {
-    const userId = Number(req.params.user_id);
-
-    if (!userId) throw new Error('[ 요청 에러 ] 아이디를 반드시 입력해야 합니다.');
-
+  //  if (!userId) throw new Error('[ 요청 에러 ] 아이디를 반드시 입력해야 합니다.');
     const userInfo = await userService.getUser(userId);
 
     res.status(200).json({ message: '유저 정보 조회 성공', data: userInfo });
@@ -20,11 +21,10 @@ export const getUserInfo = async (req: Request, res: Response, next: NextFunctio
 
 // 유저 정보 수정
 export const updateUserHandler = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const userId = Number(req.params.user_id);  
-    const imgFileRoot = `http://localhost:3000/api/v1/static/${req.file?.filename}`;
+  const userId = req.user.user_id;
 
-    if (!userId) throw new Error('[ 요청 에러 ] 아이디를 반드시 입력해야 합니다.');
+  try {
+    const imgFileRoot = `http://localhost:3000/api/v1/static/${req.file?.filename}`;
 
     const { nickname, phone, interest, img } = req.body;
     console.log(nickname, phone, interest, img);
@@ -50,12 +50,12 @@ export const updateUserHandler = async (req: Request, res: Response, next: NextF
 
 // 유저 삭제
 export const hardDeleteUserHandler = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const userId = Number(req.params.user_id);
-    // if (!userId) throw new Error('[요청 에러] 사용자 아이디를 반드시 입력해야 합니다.');
+  const userId = req.user.user_id;
 
-    await userService.hardDelete(userId);
-    res.status(200).json({ message: '계정 삭제 성공' });
+  try {
+    const deletedUserID = await userService.removeUser(userId);
+
+    res.status(200).json({ message: '계정 삭제 성공', data: { user_id:deletedUserID } });
   } catch (error: any) {
     console.log('계정 삭제 실패');
     throw error;
@@ -64,13 +64,12 @@ export const hardDeleteUserHandler = async (req: Request, res: Response, next: N
 
 // 유저 작성글 조회
 export const getPostByUserHandler = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const userId = Number(req.params);
-    if (!userId) throw new Error('[요청 에러] 사용자 아이디를 반드시 입력해야 합니다.');
+  const userId = req.user.user_id;
 
+  try {
     const category = Number(req.query.category);
 
-    const posts = await userService.getPostsByUser(category, userId);
+    const posts = await userService.getPostsByUser(userId,category);
 
     res.status(200).json({ message: '유저 게시글 조회 성공', data: posts });
   } catch (error: any) {
@@ -81,13 +80,13 @@ export const getPostByUserHandler = async (req: Request, res: Response, next: Ne
 
 // 유저 shorts 조회
 export const getShortsByUserHandler = async (req: Request, res: Response, next: NextFunction) => {
+  const userId = req.user.user_id;
+
   try {
-    const userId = Number(req.params);
-    if (!userId) throw new Error('[요청 에러] 사용자 아이디를 반드시 입력해야 합니다.');
 
     const category = Number(req.query.category);
 
-    const shorts = await userService.getPostsByUser(category, userId);
+    const shorts = await userService.getShortsByUser(userId, category);
 
     res.status(200).json({ message: '유저 shorts 조회 성공', data: shorts });
   } catch (error: any) {

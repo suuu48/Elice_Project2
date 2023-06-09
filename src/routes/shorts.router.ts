@@ -1,5 +1,6 @@
 import express from 'express';
 import * as shortController from '../controller/shorts.controller';
+import {isAccessTokenValid} from "../middleware/jwt";
 
 export const shortsRoute = express();
 
@@ -10,7 +11,7 @@ shortsRoute.get('/', shortController.getShortsListHandler);
 shortsRoute.get('/:shorts_id', shortController.getShortsHandler);
 
 // 쇼츠 등록 (로그인 필요)
-shortsRoute.post('/:user_id', shortController.addShortsHandler);
+shortsRoute.post('/',isAccessTokenValid, shortController.addShortsHandler);
 
 // 쇼츠 삭제 (로그인 필요)
-shortsRoute.delete('/:shorts_id', shortController.removeShortsHandler);
+shortsRoute.delete('/:shorts_id',isAccessTokenValid, shortController.removeShortsHandler);

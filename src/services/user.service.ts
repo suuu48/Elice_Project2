@@ -1,11 +1,11 @@
 import jwt from 'jsonwebtoken';
 import * as userRepo from '../database/user.repo';
-import { createUserInput, updateUserInput, User, UserProfile } from '../database/schemas/user.entity';
-import { env } from '../config/envconfig';
+import { updateUserInput,  UserProfile,} from '../database/schemas/user.entity';
 import fs from 'fs';
-import * as postRepo from "../database/post.repo";
-import * as shortsRepo from "../database/shorts.repo";
-import {AppError} from "../utils/errorHandler";
+import * as postRepo from '../database/post.repo';
+import * as shortsRepo from '../database/shorts.repo';
+import { AppError } from '../utils/errorHandler';
+
 
 // 유저 정보 조회
 export const getUser = async (userId: number): Promise<UserProfile> => {
@@ -59,12 +59,14 @@ const editImage = async (userId: number, inputData: updateUserInput) => {
 };
 
 // 유저 삭제
-export const hardDelete = async (userId: number): Promise<void> => {
+export const removeUser = async (userId: number): Promise<number> => {
   try {
     const foundUser = await userRepo.getUserInfoById(userId);
     if (!foundUser) throw new Error('존재하지 않는 아이디 입니다.');
 
-    await userRepo.hardDeleteUser(userId);
+    const deleteId = await userRepo.deleteUser(userId);
+
+    return deleteId;
   } catch (error: any) {
     console.log(error);
     throw new Error('유저 삭제에 실패했습니다.');
@@ -72,15 +74,12 @@ export const hardDelete = async (userId: number): Promise<void> => {
 };
 
 // 유저가 작성한 게시글 목록 조회
-export const getPostsByUser = async (category: number| undefined, userId: number): Promise<any[]> => {
+export const getPostsByUser = async (userId: number, category: number | undefined): Promise<any[]> => {
   try {
-    let posts;
-
-    if (category === undefined) {
-      posts = await postRepo.findPostsByUser(userId);
-    } else {
-       posts = await postRepo.findPostsByUserAndCategory(userId, category);
-    }
+    const isCategoryValid = category !== undefined && !isNaN(category);
+    const posts = isCategoryValid
+      ? await postRepo.findPostsByUserAndCategory(userId, category)
+      : await postRepo.findPostsByUser(userId);
 
     if (posts === undefined) throw new Error('[ 게시글 조회 에러 ] 게시글 조회 실패');
 
@@ -97,15 +96,12 @@ export const getPostsByUser = async (category: number| undefined, userId: number
 };
 
 // 유저가 작성한 쇼츠 목록 조회
-export const getShortsByUser = async (category: number| undefined, userId: number): Promise<any[]> => {
+export const getShortsByUser = async (userId: number, category: number | undefined): Promise<any[]> => {
   try {
-    let shorts;
-
-    if (category === undefined) {
-      shorts = await shortsRepo.findShortsByUser(userId);
-    } else {
-      shorts = await shortsRepo.findShortsByUserAndCategory(userId, category);
-    }
+    const isCategoryValid = category !== undefined && !isNaN(category);
+    const shorts = isCategoryValid
+        ? await shortsRepo.findShortsByUserAndCategory(userId, category)
+        : await shortsRepo.findShortsByUser(userId);
 
     if (shorts === undefined) throw new Error('[ shorts 조회 에러 ] shorts 목록 조회 실패');
 

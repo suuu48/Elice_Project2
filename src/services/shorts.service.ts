@@ -2,15 +2,12 @@ import * as shortsRepo from '../database/shorts.repo';
 import { AppError } from '../../../back/src/utils/errorHandler';
 import { createShortsInput } from '../database/schemas/shorts.entity';
 
-// 메인/카테고리별 쇼츠 목록 조회 Todo: 삼항연산자로 변경하기
+// 메인/카테고리별 쇼츠 목록 조회
 export const getShortsList = async (category: number | undefined): Promise<any[]> => {
   try {
-    let shorts;
-    if (category === undefined || isNaN(category) ) {
-      shorts = await shortsRepo.findShortsAll();
-    } else {
-      shorts = await shortsRepo.findShortsByCategory(category);
-    }
+
+    const isCategoryValid = category !== undefined && !isNaN(category);
+    const shorts = isCategoryValid ? await shortsRepo.findShortsAll() : await shortsRepo.findShortsByCategory(category);
 
     if (shorts === undefined) throw new AppError(404, '쇼츠 목록이 없습니다.');
 
@@ -71,10 +68,13 @@ export const addShorts = async (inputData: createShortsInput): Promise<any> => {
 };
 
 // 쇼츠 삭제
-export const removeShorts = async (shorts_id: number): Promise<any> => {
+export const removeShorts = async (shorts_id: number, user_id: number): Promise<number> => {
   try {
     const isValid = await shortsRepo.isShortsIdValid(shorts_id);
-    if (isValid === false) throw new AppError(404, '존재하는 쇼츠가 없습니다.');
+
+    if ( isValid.id===undefined ) throw new AppError(404, '존재하는 쇼츠가 없습니다.');
+
+    if( isValid.user_id !== user_id ) throw new AppError(403, '작성자만 삭제 가능합니다');
 
     const removedCommentId = await shortsRepo.deleteShorts(shorts_id);
 

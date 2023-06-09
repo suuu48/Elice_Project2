@@ -1,6 +1,6 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { Request } from 'express';
 
-export type UserProfile = {
+interface User{
     id: number;
     email: string;
     password: string;
@@ -10,10 +10,27 @@ export type UserProfile = {
     role: boolean;
     img: string;
 };
+export type UserInfo = User;
+export type UserProfile = User;
+export type createUserInput = Partial<Omit<User, 'id' | 'role' >>;
+export type updateUserInput = Partial<Pick<User, 'nickname' | 'phone' | 'interest' | 'img'>>;
 
-export type createUserInput = Partial<Omit<UserProfile, 'id' | 'role' >>;
-export type updateUserInput = Partial<Pick<UserProfile, 'nickname' | 'phone' | 'interest' | 'img'>>;
+declare global{
+    namespace Express{
+        interface Request{
+            user: Payload;
+        }
+    }
+}
+interface Payload {
+    user_id: number;
+    email: string;
+    role: boolean;
+}
 
+export type decodedToken = Payload;
+
+/*
 @Entity()
 export class User {
     @PrimaryGeneratedColumn()
@@ -39,4 +56,4 @@ export class User {
 
     @Column({ type: 'varchar', nullable: true, default: null })
     img!: string;
-}
+}*/
