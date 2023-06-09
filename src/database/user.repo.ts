@@ -1,8 +1,8 @@
 import { db } from '../config/dbconfig';
-import { createUserInput, UserProfile, User } from './schemas/user.entity';
+import { createUserInput, UserProfile, UserInfo } from './schemas/user.entity';
 
 // 닉네임 중복 체크
-export const checkDuplicateNickname = async (nickName: string): Promise<User> => {
+export const checkDuplicateNickname = async (nickName: string): Promise<UserInfo> => {
   try {
     const [row]: any = await db.query(
       `
@@ -37,7 +37,7 @@ export const checkDuplicateEmail = async (email: string): Promise<any> => {
 };
 
 // id 입력시 user 정보 추출
-export const getUserInfoById = async (id: number): Promise<User> => {
+export const getUserInfoById = async (id: number): Promise<UserInfo> => {
   try {
     const [row]: any = await db.query(
       `
@@ -76,7 +76,7 @@ export const createUser = async (inputData: createUserInput): Promise<number> =>
 };
 
 // 유저 정보 수정
-export const updateUser = async (userId: number, updates: Partial<User>): Promise<User> => {
+export const updateUser = async (userId: number, updates: Partial<UserInfo>): Promise<UserInfo> => {
   try {
     const updateValues = Object.entries(updates)
       .map(([key, value]) => {
@@ -106,7 +106,7 @@ export const updateUser = async (userId: number, updates: Partial<User>): Promis
 };
 
 // 유저 삭제
-export const hardDeleteUser = async (userId: number): Promise<number> => {
+export const deleteUser = async (userId: number): Promise<number> => {
   try {
     await db.query(
       `DELETE FROM user
