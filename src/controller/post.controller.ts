@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import * as postService from '../services/post.service';
 import { AppError } from '../../../back/src/utils/errorHandler';
-import { Post, createPostInput, updatePostInput } from '../database/schemas/post.entity';
+import { Post, createPostInput, updatePostInput } from '../database/types/post.entity';
 
 // 메인페이지 게시글 조회
 export const getPostMainHandler = async (req: Request, res: Response, next: NextFunction) => {
@@ -73,6 +73,7 @@ export const addPostHandler = async (req: Request, res: Response, next: NextFunc
 
   try {
     const { category, title, content } = req.body;
+    const imgFileRoot = `http://localhost:3000/api/v1/static/${req.file?.filename}`;
 
     if (userId === null) throw new AppError(400, '회원 ID를 입력해주세요.');
 
@@ -84,6 +85,7 @@ export const addPostHandler = async (req: Request, res: Response, next: NextFunc
       category,
       title,
       content,
+      img: imgFileRoot,
     };
     console.log(postData);
     const createPost = await postService.addPost(postData);
@@ -106,15 +108,17 @@ export const editPostHandler = async (req: Request, res: Response, next: NextFun
   try {
     const post_id = Number(req.params.post_id);
     const { title, content } = req.body;
+    const imgFileRoot = `http://localhost:3000/api/v1/static/${req.file?.filename}`;
 
     if (post_id === undefined) throw new AppError(400, 'post_id를 입력해주세요.');
 
     const postData: updatePostInput = {
       title,
       content,
+      img: imgFileRoot,
     };
 
-    const updatedPost = await postService.editPost(post_id, postData,userId);
+    const updatedPost = await postService.editPost(post_id, postData, userId);
 
     res.status(200).json({ message: '게시글 수정 성공', data: updatedPost });
   } catch (error: any) {
