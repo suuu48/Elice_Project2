@@ -10,7 +10,7 @@ export const findSeasonByCategory = async (category: number): Promise<any> => {
       WHERE t.category = ? `,
       [category]
     );
-    
+
     return row;
   } catch (error) {
     console.log(error);
