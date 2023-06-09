@@ -29,6 +29,13 @@ export const updateUserInfo = async (
     const foundUser = await userRepo.getUserInfoById(userId);
     if (!foundUser) throw new Error('존재하지 않는 아이디 입니다.');
 
+    const { interest, ...otherUpdates } = updateData;
+
+    // 카테고리 유효성 검사
+    if (interest !== undefined && ![0, 1, 2].includes(interest)) {
+      throw new Error('유효하지 않은 카테고리입니다.');
+    }
+
     await editImage(userId, updateData);
 
     const updateUser = await userRepo.updateUser(userId, updateData);

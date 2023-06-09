@@ -14,3 +14,23 @@ export const getCategoriesHandler = async (req: Request, res: Response, next: Ne
         throw error;
     }
 };
+
+// 카테고리 유효성 체크
+export const validateCategory = async (req: Request, res: Response, next: NextFunction) => {
+    // 카테고리 조회 API를 호출하여 유효성 검사
+    try {
+        const categoryId = req.params.id;
+        const categories = await categoryService.getCategories(); // 카테고리 조회 서비스 메소드 호출
+    
+        const isValidCategory = categories.data.some((category: { id: number }) => category.id === Number(categoryId));
+    
+        if (!isValidCategory) {
+            return res.status(400).json({ message: 'Invalid category' });
+        }
+  
+        next();
+    } catch (error) {
+        console.error('Error validating category:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
