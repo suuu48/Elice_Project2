@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import * as commentService from '../services/comment.service';
 import { AppError } from '../../../back/src/utils/errorHandler';
-import { createCommentInput } from '../database/schemas/comment.entity';
+import { createCommentInput } from '../database/types/comment.entity';
 
 // 댓글 상세 조회
 export const getCommentHandler = async (req: Request, res: Response, next: NextFunction) => {
