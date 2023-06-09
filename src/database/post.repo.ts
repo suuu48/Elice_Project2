@@ -1,5 +1,5 @@
 import { db } from '../config/dbconfig';
-import { Post, createPostInput, updatePostInput } from './schemas/post.entity';
+import { Post, createPostInput, updatePostInput } from './types/post.entity';
 
 // 메인페이지 최신순 5개 조회
 export const findAllPostsByCreated = async (): Promise<any[]> => {
@@ -53,41 +53,44 @@ export const findPostsByCategory = async (category: number): Promise<any[]> => {
 
 // 유저가 작성한 글 전체 조회
 export const findPostsByUser = async (userId: number): Promise<any> => {
-    try {
-        const [row]: any = await db.query(
-            `SELECT p.id, p.user_id, p.category, p.title, p.created_at, p.views 
+  try {
+    const [row]: any = await db.query(
+      `SELECT p.id, p.user_id, p.category, p.title, p.created_at, p.views 
            FROM post p
            WHERE p.user_id = ? AND p.report <= 5`,
-            [userId]
-        );
-        return row;
-    } catch (error) {
-        console.log(error);
-        throw new Error('[ DB 에러 ] 유저 별 게시글 목록 조회 실패');
-    }
+      [userId]
+    );
+    return row;
+  } catch (error) {
+    console.log(error);
+    throw new Error('[ DB 에러 ] 유저 별 게시글 목록 조회 실패');
+  }
 };
 
 // 유저가 작성한 글 종목 별 조회
-export const findPostsByUserAndCategory = async (userId: number, category: number | undefined): Promise<any> => {
-    try {
-        const [row]: any = await db.query(
-            `SELECT p.id, p.user_id, p.category, p.title, p.created_at, p.views 
+export const findPostsByUserAndCategory = async (
+  userId: number,
+  category: number | undefined
+): Promise<any> => {
+  try {
+    const [row]: any = await db.query(
+      `SELECT p.id, p.user_id, p.category, p.title, p.created_at, p.views 
            FROM post p
            WHERE p.user_id = ? AND p.category =? And p.report <= 5`,
-            [userId, category]
-        );
-        return row;
-    } catch (error) {
-        console.log(error);
-        throw new Error('[ DB 에러 ] 게시글 목록 조회 실패');
-    }
+      [userId, category]
+    );
+    return row;
+  } catch (error) {
+    console.log(error);
+    throw new Error('[ DB 에러 ] 게시글 목록 조회 실패');
+  }
 };
 
 //게시글 글 상세 조회
 export const findPostById = async (postId: number): Promise<any> => {
   try {
     const [row]: any = await db.query(
-      `SELECT p.id, p.user_id, p.title, p.content, p.category, p.created_at, u.nickname, p.views 
+      `SELECT p.id, p.user_id, p.title, p.content, p.img, p.category, p.created_at, u.nickname, p.views 
            FROM post p
            JOIN user u ON p.user_id= u.id
            WHERE p.id = ? AND p.report <= 5`,
@@ -103,7 +106,7 @@ export const findPostById = async (postId: number): Promise<any> => {
 // 게시글 등록
 export const createPost = async (inputData: createPostInput): Promise<number> => {
   try {
-    const createColumns = 'user_id, category, title, content';
+    const createColumns = 'user_id, category, title, content, img';
     const createValues = Object.values(inputData)
       .map((value) => `'${value}'`)
       .join(', ');
@@ -173,19 +176,19 @@ export const reportPost = async (postId: number): Promise<any> => {
 
 // 게시글 조회수 증가
 export const viewPost = async (postId: number): Promise<any> => {
-    try {
-        const [viewPost]: any = await db.query(
-            ` UPDATE post
+  try {
+    const [viewPost]: any = await db.query(
+      ` UPDATE post
               SET views = views + 1
               WHERE id = ?`,
-            [postId]
-        );
+      [postId]
+    );
 
-        return viewPost!;
-    } catch (error) {
-        console.log(error);
-        throw new Error('[ DB 에러 ] 게시글 조회수 증가 실패');
-    }
+    return viewPost!;
+  } catch (error) {
+    console.log(error);
+    throw new Error('[ DB 에러 ] 게시글 조회수 증가 실패');
+  }
 };
 
 // 게시글 삭제
