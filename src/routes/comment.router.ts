@@ -1,6 +1,7 @@
 import express from 'express';
 import * as commentController from '../controller/comment.controller';
 import {getCommentListHandler} from "../controller/comment.controller";
+import {isAccessTokenValid} from "../middleware/jwt";
 
 export const commentRoute = express();
 
@@ -11,10 +12,10 @@ commentRoute.get('/:comment_id', commentController.getCommentHandler);
 commentRoute.get('/list/:id', commentController.getCommentListHandler)
 
 // 댓글 등록 (로그인 필수)
-commentRoute.post('/:user_id', commentController.addCommentHandler);
+commentRoute.post('/',isAccessTokenValid, commentController.addCommentHandler);
 
 // 댓글 삭제 (로그인 필수)
-commentRoute.delete('/:comment_id', commentController.removeCommentHandler);
+commentRoute.delete('/:comment_id', isAccessTokenValid, commentController.removeCommentHandler);
 
 // 댓글 신고 (로그인 필수)
-commentRoute.post('/report/:comment_id', commentController.reportCommentHandler);
+commentRoute.patch('/report/:comment_id', isAccessTokenValid, commentController.reportCommentHandler);
