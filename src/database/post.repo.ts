@@ -55,7 +55,7 @@ export const findPostsByCategory = async (category: number): Promise<any[]> => {
 export const findPostsByUser = async (userId: number): Promise<any> => {
     try {
         const [row]: any = await db.query(
-            `SELECT p.id, p.category, p.title, p.created_at, p.views 
+            `SELECT p.id, p.user_id, p.category, p.title, p.created_at, p.views 
            FROM post p
            WHERE p.user_id = ? AND p.report <= 5`,
             [userId]
@@ -68,12 +68,12 @@ export const findPostsByUser = async (userId: number): Promise<any> => {
 };
 
 // 유저가 작성한 글 종목 별 조회
-export const findPostsByUserAndCategory = async (userId: number, category: number): Promise<any> => {
+export const findPostsByUserAndCategory = async (userId: number, category: number | undefined): Promise<any> => {
     try {
         const [row]: any = await db.query(
-            `SELECT p.id, p.category, p.title, p.created_at, p.views 
+            `SELECT p.id, p.user_id, p.category, p.title, p.created_at, p.views 
            FROM post p
-           WHERE p.user_id = ? AND p.category = ? And p.report <= 5`,
+           WHERE p.user_id = ? AND p.category =? And p.report <= 5`,
             [userId, category]
         );
         return row;
@@ -87,7 +87,7 @@ export const findPostsByUserAndCategory = async (userId: number, category: numbe
 export const findPostById = async (postId: number): Promise<any> => {
   try {
     const [row]: any = await db.query(
-      `SELECT p.id, p.title, p.content, p.category, p.created_at, u.nickname, p.views 
+      `SELECT p.id, p.user_id, p.title, p.content, p.category, p.created_at, u.nickname, p.views 
            FROM post p
            JOIN user u ON p.user_id= u.id
            WHERE p.id = ? AND p.report <= 5`,
