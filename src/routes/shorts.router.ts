@@ -1,6 +1,7 @@
 import express from 'express';
 import * as shortController from '../controller/shorts.controller';
-import {isAccessTokenValid} from "../middleware/jwt";
+import { isAccessTokenValid } from '../middleware/jwt';
+import { uploadShorts } from '../middleware/multer';
 
 export const shortsRoute = express();
 
@@ -11,7 +12,7 @@ shortsRoute.get('/', shortController.getShortsListHandler);
 shortsRoute.get('/:shorts_id', shortController.getShortsHandler);
 
 // 쇼츠 등록 (로그인 필요)
-shortsRoute.post('/',isAccessTokenValid, shortController.addShortsHandler);
+shortsRoute.post('/', isAccessTokenValid, uploadShorts, shortController.addShortsHandler);
 
 // 쇼츠 삭제 (로그인 필요)
-shortsRoute.delete('/:shorts_id',isAccessTokenValid, shortController.removeShortsHandler);
+shortsRoute.delete('/:shorts_id', isAccessTokenValid, shortController.removeShortsHandler);

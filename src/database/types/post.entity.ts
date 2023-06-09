@@ -7,6 +7,7 @@ interface PostProfile {
   nickname: string;
   views: number;
   content: string;
+  img: string;
 }
 
 export type Post = PostProfile;

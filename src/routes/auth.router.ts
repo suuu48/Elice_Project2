@@ -1,6 +1,5 @@
 import express from 'express';
 import * as authController from '../controller/auth.controller';
-//import processImage from '../middlewares/multer';
 export const authRoute = express();
 
 // 회원가입

@@ -1,5 +1,5 @@
 import { db } from '../config/dbconfig';
-import { createCommentInput } from './schemas/comment.entity';
+import { createCommentInput } from './types/comment.entity';
 
 // 콘텐츠에 해당하는 댓글 목록 조회 (id는 비디오나 게시글의 id) Todo: service에서 contents_category 별로 함수 다르게 작성 및 쿼리추가
 export const findByContents = async (contents_category: number, id: number): Promise<any> => {
@@ -21,7 +21,6 @@ export const findByContents = async (contents_category: number, id: number): Pro
     throw new Error('[ DB 에러 ] 게시글 상세 조회 실패');
   }
 };
-
 
 //콘텐츠에 해당하는 댓글 수 조회 (id는 비디오나 게시글의 id)
 export const findCountByContent = async (contents_category: number, id: number): Promise<any> => {
@@ -63,10 +62,15 @@ export const findCommentById = async (commentId: number): Promise<any> => {
 };
 
 // 댓글 등록
-export const createComment = async (contents_category: number, inputData: createCommentInput): Promise<number> => {
+export const createComment = async (
+  contents_category: number,
+  inputData: createCommentInput
+): Promise<number> => {
   try {
     const isCategoryValid = contents_category === 0;
-    const createColumns = isCategoryValid ? 'video_id, user_id, content' : 'post_id, user_id, content';
+    const createColumns = isCategoryValid
+      ? 'video_id, user_id, content'
+      : 'post_id, user_id, content';
     console.log(createColumns);
     const createValues = Object.values(inputData)
       .map((value) => `'${value}'`)
@@ -124,10 +128,10 @@ export const reportComment = async (commentId: number): Promise<any> => {
 export const isCommentIdValid = async (commentId: number): Promise<boolean> => {
   try {
     const [countRows]: any = await db.query(
-        `SELECT COUNT(*) AS count
+      `SELECT COUNT(*) AS count
          FROM comment
          WHERE id = ?`,
-        [commentId]
+      [commentId]
     );
     const count = countRows[0].count;
 

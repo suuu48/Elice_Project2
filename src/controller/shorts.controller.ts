@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import * as shortsService from '../services/shorts.service';
 import { AppError } from '../../../back/src/utils/errorHandler';
-import { createShortsInput } from '../database/schemas/shorts.entity';
+import { createShortsInput } from '../database/types/shorts.entity';
 
 // 쇼츠 최신 순 목록 조회
 export const getShortsListHandler = async (req: Request, res: Response, next: NextFunction) => {
@@ -45,18 +45,18 @@ export const getShortsHandler = async (req: Request, res: Response, next: NextFu
 export const addShortsHandler = async (req: Request, res: Response, next: NextFunction) => {
   const user_id = req.user.user_id;
   try {
-    const { category, title, src } = req.body;
-
+    const { category, title } = req.body;
+    const imgFileRoot = `http://localhost:3000/api/v1/static/${req.file?.filename}`;
     if (!user_id) throw new AppError(400, '회원 ID를 입력해주세요.');
 
-    if (!category || !title || !src)
+    if (!category || !title || !imgFileRoot)
       throw new AppError(400, '요청 body에 모든 정보를 입력해주세요.');
 
     const shortsData: createShortsInput = {
       user_id,
       category,
       title,
-      src,
+      src: imgFileRoot,
     };
 
     const createShorts = await shortsService.addShorts(shortsData);
@@ -81,7 +81,7 @@ export const removeShortsHandler = async (req: Request, res: Response, next: Nex
 
     if (!shorts_id) throw new AppError(400, 'shorts_id를 입력해주세요.');
 
-    const deletedShortsId = await shortsService.removeShorts(shorts_id,user_id);
+    const deletedShortsId = await shortsService.removeShorts(shorts_id, user_id);
 
     res.status(200).json({ message: 'shorts 삭제 성공', data: { shorts_id: deletedShortsId } });
   } catch (error: any) {

@@ -9,7 +9,9 @@ import { rankRoute } from './rank.router';
 import { teamRoute } from './team.router';
 import { categoryRoute } from './category.router';
 export const v1Router = express.Router();
+const staticRouter = express.static('public');
 
+v1Router.use('/static', staticRouter);
 v1Router.use('/auth', authRoute);
 v1Router.use('/user', userRoute);
 v1Router.use('/shorts', shortsRoute);

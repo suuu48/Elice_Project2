@@ -1,5 +1,5 @@
 import { db } from '../config/dbconfig';
-import { createUserInput, UserProfile, UserInfo } from './schemas/user.entity';
+import { createUserInput, UserProfile, UserInfo } from './types/user.entity';
 
 // 닉네임 중복 체크
 export const checkDuplicateNickname = async (nickName: string): Promise<UserInfo> => {
@@ -22,11 +22,11 @@ export const checkDuplicateNickname = async (nickName: string): Promise<UserInfo
 export const checkDuplicateEmail = async (email: string): Promise<any> => {
   try {
     const [row]: any = await db.query(
-        `
+      `
       SELECT *
       FROM user
       WHERE email =?`,
-        [email]
+      [email]
     );
 
     return row[0];
