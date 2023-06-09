@@ -14,7 +14,7 @@ export const getCategoriesHandler = async (req: Request, res: Response, next: Ne
         throw error;
     }
 };
-
+/*
 // 카테고리 유효성 체크
 export const validateCategory = async (req: Request, res: Response, next: NextFunction) => {
     // 카테고리 조회 API를 호출하여 유효성 검사
@@ -34,3 +34,5 @@ export const validateCategory = async (req: Request, res: Response, next: NextFu
         res.status(500).json({ message: 'Internal server error' });
     }
 };
+
+ */
