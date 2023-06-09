@@ -43,8 +43,8 @@ export const getShortsHandler = async (req: Request, res: Response, next: NextFu
 
 // 쇼츠 등록
 export const addShortsHandler = async (req: Request, res: Response, next: NextFunction) => {
+  const user_id = req.user.user_id;
   try {
-    const user_id = Number(req.params.user_id);
     const { category, title, src } = req.body;
 
     if (!user_id) throw new AppError(400, '회원 ID를 입력해주세요.');
@@ -73,14 +73,15 @@ export const addShortsHandler = async (req: Request, res: Response, next: NextFu
   }
 };
 
-// 게시글 삭제
+// shorts 삭제
 export const removeShortsHandler = async (req: Request, res: Response, next: NextFunction) => {
+  const user_id = req.user.user_id;
   try {
     const shorts_id = Number(req.params.shorts_id);
 
     if (!shorts_id) throw new AppError(400, 'shorts_id를 입력해주세요.');
 
-    const deletedShortsId = await shortsService.removeShorts(shorts_id);
+    const deletedShortsId = await shortsService.removeShorts(shorts_id,user_id);
 
     res.status(200).json({ message: 'shorts 삭제 성공', data: { shorts_id: deletedShortsId } });
   } catch (error: any) {
