@@ -19,10 +19,7 @@ export const findShortsByUser = async (user_id: number): Promise<any[]> => {
 };
 
 // 유저가 작성한 동영상 종목 별 조회
-export const findShortsByUserAndCategory = async (
-    userId: number,
-    category: number
-): Promise<any> => {
+export const findShortsByUserAndCategory = async (userId: number, category: number| undefined): Promise<any> => {
     try {
         const [row]: any = await db.query(
             `SELECT v.id, v.category, v.title, v.src, v.views 
@@ -54,7 +51,7 @@ export const findShortsAll = async (): Promise<any[]> => {
     }
 };
 // 카테고리 별 쇼츠 목록 조회
-export const findShortsByCategory = async (category: number): Promise<any[]> => {
+export const findShortsByCategory = async (category: number| undefined): Promise<any[]> => {
     try {
         const [row]: any = await db.query(
             `SELECT v.id, v.title, v.src, u.img as user_img, u.nickname, v.views
@@ -146,6 +143,23 @@ export const deleteShorts = async (shortsId: number): Promise<number> => {
 };
 
 /* videoId 유효성 검사 */
+export const isShortsIdValid = async (shortsId: number): Promise<any> => {
+    try {
+        const [countRows]: any = await db.query(
+            `SELECT *
+             FROM video
+             WHERE id = ?`,
+            [shortsId]
+        );
+        console.log(countRows);
+        return countRows[0];
+    } catch (error) {
+        console.log(error);
+        throw new Error('[ DB 에러 ] 비디오 유효성 검사 실패');
+    }
+};
+
+/*
 export const isShortsIdValid = async (shortsId: number): Promise<boolean> => {
     try {
         const [countRows]: any = await db.query(
@@ -162,3 +176,5 @@ export const isShortsIdValid = async (shortsId: number): Promise<boolean> => {
         throw new Error('[ DB 에러 ] 비디오 유효성 검사 실패');
     }
 };
+
+ */
