@@ -47,7 +47,7 @@ export const isCheckTeam = async (teamId: number, category: number): Promise<any
   try {
     const isTeam = await scheduleRepo.checkTeamByCategory(category, teamId);
 
-    if (isTeam === undefined) throw new Error('[ 일정 조회 에러 ] 해당 종목의 팀이 아닙니다.');
+    if (!isTeam) throw new Error('[ 일정 조회 에러 ] 해당 종목의 팀이 아닙니다.');
 
     return isTeam;
   } catch (error: any) {

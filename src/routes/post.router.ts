@@ -18,7 +18,7 @@ postRoute.get('/:post_id', postController.getPostHandler);
 postRoute.post('/', isAccessTokenValid, uploadImage, postController.addPostHandler);
 
 // 게시글 수정 (로그인 필수)
-postRoute.patch('/:post_id', isAccessTokenValid, uploadImage, postController.editPostHandler);
+postRoute.put('/:post_id', isAccessTokenValid, uploadImage, postController.editPostHandler);
 
 // 게시글 삭제 (로그인 필수)
 postRoute.delete('/:post_id', isAccessTokenValid, postController.removePostHandler);

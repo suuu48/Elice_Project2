@@ -7,7 +7,7 @@ import { Post, createPostInput, updatePostInput } from '../database/types/post.e
 export const getPostMainHandler = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const category = Number(req.params.category);
-    if (category === null) throw new AppError(400, 'category를 입력해주세요.');
+    if (category === undefined) throw new AppError(400, 'category를 입력해주세요.');
 
     const posts = await postService.getPostsMain(category);
 
@@ -31,7 +31,7 @@ export const getPostsByCategoryHandler = async (
 ) => {
   try {
     const category = Number(req.params.category);
-    if (category === null) throw new AppError(400, 'category를 입력해주세요.');
+    if (category === undefined) throw new AppError(400, 'category를 입력해주세요.');
 
     const posts = await postService.getPostsByCategory(category);
 
@@ -108,6 +108,10 @@ export const editPostHandler = async (req: Request, res: Response, next: NextFun
   try {
     const post_id = Number(req.params.post_id);
     const { title, content } = req.body;
+
+    if (!title && !content )
+      throw new AppError(400, '수정된 값이 없습니다.');
+
     const imgFileRoot = `http://localhost:3000/api/v1/static/${req.file?.filename}`;
 
     if (post_id === undefined) throw new AppError(400, 'post_id를 입력해주세요.');

@@ -50,10 +50,8 @@ export const getPost = async (post_id: number): Promise<any[]> => {
     const post = await postRepo.findPostById(post_id);
     if (post === undefined) throw new AppError(404, '해당 게시글이 없습니다.');
 
-    await postRepo.viewPost(post_id);
-
-    // const comment = await commentRepo.findByContent(1,post_id);
-    // if (post === undefined) throw new AppError(404, '존재하는 게시글이 없습니다.');
+    const views = await postRepo.viewPost(post_id);
+    if(!views) throw new AppError(404, '조회수 업로드 실패');
 
     return post;
   } catch (error: any) {

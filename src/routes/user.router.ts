@@ -9,7 +9,7 @@ export const userRoute = express();
 userRoute.get('/', isAccessTokenValid, userController.getUserInfo);
 
 // 유저 정보 수정
-userRoute.post('/', isAccessTokenValid, userController.updateUserHandler);
+userRoute.put('/', isAccessTokenValid, userController.updateUserHandler);
 
 // 유저 정보 삭제
 userRoute.delete('/', isAccessTokenValid, userController.hardDeleteUserHandler);
