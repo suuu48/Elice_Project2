@@ -3,6 +3,7 @@ import { AppError } from '../../../back/src/utils/errorHandler';
 import { createShortsInput } from '../models/shorts';
 import fs from 'fs';
 import * as categoryRepo from '../database/category.repo';
+import { env } from '../config/envconfig';
 
 // 메인/카테고리별 쇼츠 목록 조회
 export const getShortsList = async (category: number | undefined): Promise<any[]> => {
@@ -34,14 +35,27 @@ export const getShortsList = async (category: number | undefined): Promise<any[]
 // 쇼츠 상세 조회
 export const getShorts = async (
   shorts_id: number | undefined,
-  category: number
+  category: number,
+  user_id: number
 ): Promise<any[]> => {
   try {
     if (typeof shorts_id === 'number' && !isNaN(shorts_id)) {
       const isValid = await shortsRepo.isShortsIdValid(shorts_id);
       if (!isValid) throw new AppError(404, '존재하는 쇼츠가 없습니다.');
+
+      if (user_id !== 0) {
+        const isViews = await shortsRepo.getUserShortsViewStatus(shorts_id, user_id);
+        if (isViews === 0) {
+          const insertRedis = await shortsRepo.incrementShortsViewCount(shorts_id, user_id);
+          if (!insertRedis) throw new AppError(404, 'Redis에 업로드 실패'); //Todo: 에러 메세지 변경
+
+          const views = await shortsRepo.viewShorts(shorts_id);
+          if (views.affectedRows !== 1) throw new AppError(404, '조회수 업로드 실패');
+        }
+      }
+
       const detailShorts = await shortsRepo.findShortsByIdAndCategory(shorts_id, category);
-      await shortsRepo.viewShorts(shorts_id);
+
       return detailShorts;
     } else {
       const detailShorts = await shortsRepo.findOneShortsByCategory(category);
@@ -119,9 +133,7 @@ const removeImage = async (shorts_id: number) => {
   if (foundShorts.src) {
     const imgFileName = foundShorts.src.split('/')[6];
 
-    const filePath = `/Users/subin/IdeaProjects/back/public/shorts/${imgFileName}`;
-    // const filePath = `서버 실행하는 로컬의 public 파일 절대경로`;
-    // const filePath = `클라우드 인스턴스 로컬의 public 파일 절대경로`;
+    const filePath = `${env.FILE_PATH}/shorts/${imgFileName}`;
 
     fs.unlink(filePath, (error) => {
       if (error) throw new AppError(400, '쇼츠 이미지 삭제 중 오류가 발생했습니다.');
