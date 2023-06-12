@@ -25,9 +25,10 @@ export const getShortsListHandler = async (req: Request, res: Response, next: Ne
 // 쇼츠 상세 조회
 export const getShortsHandler = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const shorts_id = Number(req.params.shorts_id);
+    const shorts_id = Number(req.query.shorts_id);
+    const category = Number(req.query.category);
 
-    const shorts = await shortsService.getShorts(shorts_id);
+    const shorts = await shortsService.getShorts(shorts_id, category);
 
     res.status(200).json({ message: '쇼츠 상세 조회 성공', data: shorts });
   } catch (error: any) {
