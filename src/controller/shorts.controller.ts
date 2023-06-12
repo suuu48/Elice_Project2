@@ -47,7 +47,7 @@ export const addShortsHandler = async (req: Request, res: Response, next: NextFu
   const user_id = req.user.user_id;
   try {
     const { category, title } = req.body;
-    const imgFileRoot = `http://localhost:3000/api/v1/static/${req.file?.filename}`;
+    const imgFileRoot = `http://localhost:5500/api/v1/static/shorts/${req.file?.filename}`;
     if (!user_id) throw new AppError(400, '회원 ID를 입력해주세요.');
 
     if (!category || !title || !imgFileRoot)
