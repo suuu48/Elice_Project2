@@ -1,7 +1,6 @@
 import * as postRepo from '../database/post.repo';
-import * as commentRepo from '../database/comment.repo';
 import { AppError } from '../../../back/src/utils/errorHandler';
-import { Post, createPostInput, updatePostInput } from '../database/types/post.entity';
+import { createPostInput, updatePostInput } from '../database/types/post.entity';
 import fs from 'fs';
 
 // 메인페이지 최신글 조회
