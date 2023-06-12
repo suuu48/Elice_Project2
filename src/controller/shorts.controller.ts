@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import * as shortsService from '../services/shorts.service';
 import { AppError } from '../../../back/src/utils/errorHandler';
+import {env} from '../config/envconfig';
 import { createShortsInput } from '../database/types/shorts.entity';
 
 // 쇼츠 최신 순 목록 조회
@@ -25,9 +26,10 @@ export const getShortsListHandler = async (req: Request, res: Response, next: Ne
 // 쇼츠 상세 조회
 export const getShortsHandler = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const shorts_id = Number(req.params.shorts_id);
+    const shorts_id = Number(req.query.shorts_id);
+    const category = Number(req.query.category);
 
-    const shorts = await shortsService.getShorts(shorts_id);
+    const shorts = await shortsService.getShorts(shorts_id, category);
 
     res.status(200).json({ message: '쇼츠 상세 조회 성공', data: shorts });
   } catch (error: any) {
@@ -46,7 +48,7 @@ export const addShortsHandler = async (req: Request, res: Response, next: NextFu
   const user_id = req.user.user_id;
   try {
     const { category, title } = req.body;
-    const imgFileRoot = `http://localhost:3000/api/v1/static/${req.file?.filename}`;
+    const imgFileRoot = `${env.STATIC_PATH}/shorts/${req.file?.filename}`;
     if (!user_id) throw new AppError(400, '회원 ID를 입력해주세요.');
 
     if (!category || !title || !imgFileRoot)

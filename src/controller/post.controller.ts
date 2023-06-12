@@ -1,13 +1,14 @@
 import { Request, Response, NextFunction } from 'express';
 import * as postService from '../services/post.service';
 import { AppError } from '../../../back/src/utils/errorHandler';
-import { Post, createPostInput, updatePostInput } from '../database/types/post.entity';
+import {env} from '../config/envconfig';
+import { createPostInput, updatePostInput } from '../database/types/post.entity';
 
 // 메인페이지 게시글 조회
 export const getPostMainHandler = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const category = Number(req.params.category);
-    if (category === null) throw new AppError(400, 'category를 입력해주세요.');
+    if (category === undefined) throw new AppError(400, 'category를 입력해주세요.');
 
     const posts = await postService.getPostsMain(category);
 
@@ -31,7 +32,7 @@ export const getPostsByCategoryHandler = async (
 ) => {
   try {
     const category = Number(req.params.category);
-    if (category === null) throw new AppError(400, 'category를 입력해주세요.');
+    if (category === undefined) throw new AppError(400, 'category를 입력해주세요.');
 
     const posts = await postService.getPostsByCategory(category);
 
@@ -73,7 +74,7 @@ export const addPostHandler = async (req: Request, res: Response, next: NextFunc
 
   try {
     const { category, title, content } = req.body;
-    const imgFileRoot = `http://localhost:3000/api/v1/static/${req.file?.filename}`;
+    const imgFileRoot = `${env.STATIC_PATH}/img/${req.file?.filename}`;
 
     if (userId === null) throw new AppError(400, '회원 ID를 입력해주세요.');
 
@@ -108,7 +109,11 @@ export const editPostHandler = async (req: Request, res: Response, next: NextFun
   try {
     const post_id = Number(req.params.post_id);
     const { title, content } = req.body;
-    const imgFileRoot = `http://localhost:3000/api/v1/static/${req.file?.filename}`;
+
+    if (!title && !content )
+      throw new AppError(400, '수정된 값이 없습니다.');
+
+    const imgFileRoot = `${env.STATIC_PATH}/img/${req.file?.filename}`;
 
     if (post_id === undefined) throw new AppError(400, 'post_id를 입력해주세요.');
 
