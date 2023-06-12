@@ -6,10 +6,10 @@ import { createCommentInput } from '../database/types/comment.entity';
 // 댓글 상세 조회
 export const getCommentHandler = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const commentId = Number(req.params.comment_id);
-    if (commentId === null) throw new AppError(400, '댓글 ID를 입력해주세요.');
+    const comment_id = Number(req.params.comment_id);
+    if (comment_id === null) throw new AppError(400, '댓글 ID를 입력해주세요.');
 
-    const comment = await commentService.getComment(commentId);
+    const comment = await commentService.getComment(comment_id);
 
     res.status(200).json({ message: '댓글 상세 조회 성공', data: comment });
   } catch (error: any) {
@@ -29,7 +29,7 @@ export const getCommentListHandler = async (req: Request, res: Response, next: N
     if (!id) throw new AppError(400, 'ID를 입력해주세요.');
 
     const contents_category = Number(req.query.contents_category);
-    if (isNaN(contents_category) && contents_category === undefined)
+    if (typeof contents_category !== 'number')
       throw new AppError(400, 'ID를 입력해주세요.');
 
     const comments = await commentService.getCommentList(contents_category, id);
@@ -62,7 +62,7 @@ export const addCommentHandler = async (req: Request, res: Response, next: NextF
 
     const comment = await commentService.addComment(contents_category, commentData);
 
-    res.status(200).json({ message: '댓글 등록 성공', data: comment });
+    res.status(201).json({ message: '댓글 등록 성공', data: comment });
   } catch (error: any) {
     if (error instanceof AppError) {
       if (error.statusCode === 404 || error.statusCode === 400) console.log(error);
@@ -84,7 +84,7 @@ export const removeCommentHandler = async (req: Request, res: Response, next: Ne
 
     const deleteCommentId = await commentService.removeComment(commentId, user_id);
 
-    res.status(200).json({ message: '댓글 삭제 성공', data: { comment_id: deleteCommentId } });
+    res.status(204).json({ message: '댓글 삭제 성공', data: { comment_id: deleteCommentId } });
   } catch (error: any) {
     if (error instanceof AppError) {
       if (error.statusCode === 404 || error.statusCode === 400) console.log(error);

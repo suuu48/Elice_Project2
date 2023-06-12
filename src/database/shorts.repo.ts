@@ -59,7 +59,7 @@ export const findShortsByCategory = async (category: number | undefined): Promis
     const [row]: any = await db.query(
       `SELECT v.id, v.title, v.src, u.img as user_img, u.nickname, v.views
              FROM video v
-                      JOIN user u ON v.user_id= u.id
+             JOIN user u ON v.user_id= u.id
              WHERE v.category = ?
              ORDER BY created_at`,
       [category]
@@ -72,14 +72,35 @@ export const findShortsByCategory = async (category: number | undefined): Promis
 };
 
 // 쇼츠 상세 조회
-export const findShortsById = async (shortsId: number): Promise<any> => {
+export const findShortsById = async (shorts_id: number): Promise<any> => {
+    try {
+        console.log("findShortsById")
+        const [row]: any = await db.query(
+            `SELECT v.id, v.title, v.category, v.src, v.created_at, u.img as user_img, u.nickname, v.views
+             FROM video v
+             JOIN user u ON v.user_id= u.id
+             WHERE v.id =?`,
+            [shorts_id]
+        );
+
+        return row[0];
+    } catch (error) {
+        console.log(error);
+        throw new Error('[ DB 에러 ] 비디오 상세 조회 실패');
+    }
+};
+
+// 쇼츠 상세 조회
+export const findOneShortsByCategory = async (category: number): Promise<any> => {
   try {
+      console.log("findOneShortsByCategory")
     const [row]: any = await db.query(
       `SELECT v.id, v.title, v.category, v.src, v.created_at, u.img as user_img, u.nickname, v.views
              FROM video v
              JOIN user u ON v.user_id= u.id
-             WHERE v.id = ? `,
-      [shortsId]
+             WHERE v.category =?
+            ORDER BY created_at DESC LIMIT 1`,
+      [category]
     );
 
     return row[0];
@@ -87,6 +108,25 @@ export const findShortsById = async (shortsId: number): Promise<any> => {
     console.log(error);
     throw new Error('[ DB 에러 ] 비디오 상세 조회 실패');
   }
+};
+
+// 쇼츠 상세 조회 (조회 조건에 카테고리 추가)
+export const findShortsByIdAndCategory = async (shorts_id: number,category: number): Promise<any> => {
+    try {
+        console.log("findShortsByIdAndCategory")
+        const [row]: any = await db.query(
+            `SELECT v.id, v.title, v.category, v.src, v.created_at, u.img as user_img, u.nickname, v.views
+             FROM video v
+             JOIN user u ON v.user_id= u.id
+             WHERE v.id = ? AND v.category= ?`,
+            [shorts_id, category]
+        );
+
+        return row[0];
+    } catch (error) {
+        console.log(error);
+        throw new Error('[ DB 에러 ] 비디오 상세 조회 실패');
+    }
 };
 
 // 쇼츠 등록
@@ -154,7 +194,7 @@ export const isShortsIdValid = async (shortsId: number): Promise<any> => {
              WHERE id = ?`,
       [shortsId]
     );
-    console.log(countRows);
+
     return countRows[0];
   } catch (error) {
     console.log(error);

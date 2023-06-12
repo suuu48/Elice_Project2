@@ -76,7 +76,7 @@ export const findPostsByUserAndCategory = async (
     const [row]: any = await db.query(
       `SELECT p.id, p.user_id, p.category, p.title, p.created_at, p.views 
            FROM post p
-           WHERE p.user_id = ? AND p.category =? And p.report <= 5`,
+           WHERE p.user_id = ? AND p.category =? AND p.report <= 5`,
       [userId, category]
     );
     return row;

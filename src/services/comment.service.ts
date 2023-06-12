@@ -6,10 +6,10 @@ import { createCommentInput } from '../database/types/comment.entity';
 export const getComment = async (comment_id: number): Promise<any[]> => {
   try {
     const isValid = await commentRepo.isCommentIdValid(comment_id);
-    if (isValid === false) throw new AppError(404, '존재하는 댓글이 없습니다.');
+    if (!isValid) throw new AppError(404, '존재하는 댓글이 없습니다.');
 
     const comment = await commentRepo.findCommentById(comment_id);
-    if (comment === undefined) throw new AppError(404, '해당 댓글이 없습니다.');
+    if (!comment) throw new AppError(404, '해당 댓글이 없습니다.');
 
     return comment;
   } catch (error: any) {
@@ -72,7 +72,7 @@ export const addComment = async (
 export const removeComment = async (comment_id: number, user_id: number): Promise<any> => {
   try {
     const isValid = await commentRepo.isCommentIdValid(comment_id);
-    if (isValid === false) throw new AppError(404, '존재하는 댓글이 없습니다.');
+    if (!isValid) throw new AppError(404, '존재하는 댓글이 없습니다.');
 
     const isUser = await commentRepo.findCommentById(comment_id);
     if (isUser.user_id !== user_id) throw new AppError(403, '작성자만 삭제 가능합니다.');
@@ -95,7 +95,7 @@ export const removeComment = async (comment_id: number, user_id: number): Promis
 export const reportComment = async (comment_id: number): Promise<any> => {
   try {
     const isValid = await commentRepo.isCommentIdValid(comment_id);
-    if (isValid === false) throw new AppError(404, '존재하는 댓글이 없습니다.');
+    if (!isValid) throw new AppError(404, '존재하는 댓글이 없습니다.');
 
     const reportComment = await commentRepo.reportComment(comment_id);
 
