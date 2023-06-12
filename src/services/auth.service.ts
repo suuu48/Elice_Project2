@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import * as userRepo from '../database/user.repo';
-import { createUserInput } from '../database/types/user.entity';
+import { createUserInput } from '../models/user';
 import { env } from '../config/envconfig';
 import { AppError } from '../../../back/src/utils/errorHandler';
 import * as categoryRepo from '../database/category.repo';
@@ -39,7 +39,7 @@ export const getUserToken = async (user_id: number): Promise<any> => {
   try {
     const user = await userRepo.getUserInfoById(user_id);
     if (!user.id) throw new AppError(404, '존재하지 않는 아이디 입니다.');
-    // 로그인 시작 -> JWT 웹 토큰 생성
+
     const accessTokenSecret = env.ACCESS_TOKEN_SECRET || 'default-access-token-secret';
     const refreshTokenSecret = env.REFRESH_TOKEN_SECRET || 'default-refresh-token-secret';
 

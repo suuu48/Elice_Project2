@@ -1,6 +1,6 @@
 import * as shortsRepo from '../database/shorts.repo';
 import { AppError } from '../../../back/src/utils/errorHandler';
-import { createShortsInput } from '../database/types/shorts.entity';
+import { createShortsInput } from '../models/shorts';
 import fs from 'fs';
 import * as categoryRepo from '../database/category.repo';
 

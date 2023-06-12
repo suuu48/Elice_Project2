@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import * as shortsService from '../services/shorts.service';
 import { AppError } from '../../../back/src/utils/errorHandler';
 import {env} from '../config/envconfig';
-import { createShortsInput } from '../database/types/shorts.entity';
+import { createShortsInput } from '../models/shorts';
 
 // 쇼츠 최신 순 목록 조회
 export const getShortsListHandler = async (req: Request, res: Response, next: NextFunction) => {

@@ -1,5 +1,5 @@
 import * as userRepo from '../database/user.repo';
-import { updateUserInput, UserProfile } from '../database/types/user.entity';
+import { updateUserInput, UserProfile } from '../models/user';
 import * as postRepo from '../database/post.repo';
 import * as shortsRepo from '../database/shorts.repo';
 import { AppError } from '../utils/errorHandler';

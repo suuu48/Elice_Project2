@@ -1,5 +1,5 @@
 import { db } from '../config/dbconfig';
-import { createCommentInput } from './types/comment.entity';
+import { createCommentInput } from '../models/comment';
 
 // 콘텐츠에 해당하는 댓글 목록 조회 (id는 비디오나 게시글의 id) Todo: service에서 contents_category 별로 함수 다르게 작성 및 쿼리추가
 export const findByContents = async (contents_category: number, id: number): Promise<any> => {

@@ -1,5 +1,4 @@
-// 미정
-export type Rank = {
+interface Rank {
   id: number;
   team_id: number;
   season: string;
@@ -10,3 +9,5 @@ export type Rank = {
   conceded: number;
   points: number;
 };
+
+export type RankProfile = Rank;

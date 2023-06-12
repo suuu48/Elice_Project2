@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import * as postService from '../services/post.service';
 import { AppError } from '../../../back/src/utils/errorHandler';
 import {env} from '../config/envconfig';
-import { createPostInput, updatePostInput } from '../database/types/post.entity';
+import { createPostInput, updatePostInput } from '../models/post';
 
 // 메인페이지 게시글 조회
 export const getPostMainHandler = async (req: Request, res: Response, next: NextFunction) => {
