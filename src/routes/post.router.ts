@@ -12,7 +12,7 @@ postRoute.get('/main/:category', postController.getPostMainHandler);
 postRoute.get('/category/:category', postController.getPostsByCategoryHandler);
 
 // 게시글 상세 조회
-postRoute.get('/:post_id', postController.getPostHandler);
+postRoute.get('/:post_id', isAccessTokenValid, postController.getPostHandler);
 
 // 게시글 등록 (로그인 필수)
 postRoute.post('/', isAccessTokenValid, uploadImage, postController.addPostHandler);
