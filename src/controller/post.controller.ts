@@ -73,7 +73,7 @@ export const addPostHandler = async (req: Request, res: Response, next: NextFunc
 
   try {
     const { category, title, content } = req.body;
-    const imgFileRoot = `http://localhost:3000/api/v1/static/${req.file?.filename}`;
+    const imgFileRoot = `http://localhost:5500/api/v1/static/img/${req.file?.filename}`;
 
     if (userId === null) throw new AppError(400, '회원 ID를 입력해주세요.');
 
@@ -112,7 +112,7 @@ export const editPostHandler = async (req: Request, res: Response, next: NextFun
     if (!title && !content )
       throw new AppError(400, '수정된 값이 없습니다.');
 
-    const imgFileRoot = `http://localhost:3000/api/v1/static/${req.file?.filename}`;
+    const imgFileRoot = `http://localhost:5500/api/v1/static/img/${req.file?.filename}`;
 
     if (post_id === undefined) throw new AppError(400, 'post_id를 입력해주세요.');
 
