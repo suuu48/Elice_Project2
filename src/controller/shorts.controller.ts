@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import * as shortsService from '../services/shorts.service';
 import { AppError } from '../../../back/src/utils/errorHandler';
+import {env} from '../config/envconfig';
 import { createShortsInput } from '../database/types/shorts.entity';
 
 // 쇼츠 최신 순 목록 조회
@@ -47,7 +48,7 @@ export const addShortsHandler = async (req: Request, res: Response, next: NextFu
   const user_id = req.user.user_id;
   try {
     const { category, title } = req.body;
-    const imgFileRoot = `http://localhost:5500/api/v1/static/shorts/${req.file?.filename}`;
+    const imgFileRoot = `${env.STATIC_PATH}/shorts/${req.file?.filename}`;
     if (!user_id) throw new AppError(400, '회원 ID를 입력해주세요.');
 
     if (!category || !title || !imgFileRoot)

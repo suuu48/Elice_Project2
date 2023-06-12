@@ -1,7 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import * as postService from '../services/post.service';
 import { AppError } from '../../../back/src/utils/errorHandler';
-import { Post, createPostInput, updatePostInput } from '../database/types/post.entity';
+import {env} from '../config/envconfig';
+import { createPostInput, updatePostInput } from '../database/types/post.entity';
 
 // 메인페이지 게시글 조회
 export const getPostMainHandler = async (req: Request, res: Response, next: NextFunction) => {
@@ -73,7 +74,7 @@ export const addPostHandler = async (req: Request, res: Response, next: NextFunc
 
   try {
     const { category, title, content } = req.body;
-    const imgFileRoot = `http://localhost:5500/api/v1/static/img/${req.file?.filename}`;
+    const imgFileRoot = `${env.STATIC_PATH}/img/${req.file?.filename}`;
 
     if (userId === null) throw new AppError(400, '회원 ID를 입력해주세요.');
 
@@ -112,7 +113,7 @@ export const editPostHandler = async (req: Request, res: Response, next: NextFun
     if (!title && !content )
       throw new AppError(400, '수정된 값이 없습니다.');
 
-    const imgFileRoot = `http://localhost:5500/api/v1/static/img/${req.file?.filename}`;
+    const imgFileRoot = `${env.STATIC_PATH}/img/${req.file?.filename}`;
 
     if (post_id === undefined) throw new AppError(400, 'post_id를 입력해주세요.');
 
