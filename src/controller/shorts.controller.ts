@@ -25,11 +25,12 @@ export const getShortsListHandler = async (req: Request, res: Response, next: Ne
 
 // 쇼츠 상세 조회
 export const getShortsHandler = async (req: Request, res: Response, next: NextFunction) => {
+  const user_id = req.user.user_id;
   try {
     const shorts_id = Number(req.query.shorts_id);
     const category = Number(req.query.category);
 
-    const shorts = await shortsService.getShorts(shorts_id, category);
+    const shorts = await shortsService.getShorts(shorts_id, category,user_id );
 
     res.status(200).json({ message: '쇼츠 상세 조회 성공', data: shorts });
   } catch (error: any) {
@@ -46,10 +47,11 @@ export const getShortsHandler = async (req: Request, res: Response, next: NextFu
 // 쇼츠 등록
 export const addShortsHandler = async (req: Request, res: Response, next: NextFunction) => {
   const user_id = req.user.user_id;
+  if (user_id === null && user_id ===0) throw new AppError(400, '회원 ID가 필요합니다.');
   try {
     const { category, title } = req.body;
     const imgFileRoot = `${env.STATIC_PATH}/shorts/${req.file?.filename}`;
-    if (!user_id) throw new AppError(400, '회원 ID를 입력해주세요.');
+
 
     if (!category || !title || !imgFileRoot)
       throw new AppError(400, '요청 body에 모든 정보를 입력해주세요.');
@@ -78,6 +80,7 @@ export const addShortsHandler = async (req: Request, res: Response, next: NextFu
 // shorts 삭제
 export const removeShortsHandler = async (req: Request, res: Response, next: NextFunction) => {
   const user_id = req.user.user_id;
+  if (user_id === null && user_id ===0) throw new AppError(400, '회원 ID가 필요합니다.');
   try {
     const shorts_id = Number(req.params.shorts_id);
 
