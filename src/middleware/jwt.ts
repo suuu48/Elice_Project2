@@ -1,7 +1,7 @@
 import { env } from '../config/envconfig';
 import { Request, RequestHandler } from 'express';
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import { decodedToken } from '../database/types/user.entity';
+import { decodedToken } from '../models/user';
 //
 export const isAccessTokenValid: RequestHandler = (req, res, next) => {
   const userToken = req.headers['authorization']?.split(' ')[1];

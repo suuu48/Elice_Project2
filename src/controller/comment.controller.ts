@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import * as commentService from '../services/comment.service';
 import { AppError } from '../../../back/src/utils/errorHandler';
-import { createCommentInput } from '../database/types/comment.entity';
+import { createCommentInput } from '../models/comment';
 
 // 댓글 상세 조회
 export const getCommentHandler = async (req: Request, res: Response, next: NextFunction) => {
@@ -56,7 +56,7 @@ export const addCommentHandler = async (req: Request, res: Response, next: NextF
       throw new AppError(400, '요청 body에 모든 정보를 입력해주세요.');
 
     const commentData: createCommentInput =
-      contents_category === 0
+      contents_category === 1
         ? { post_id: id, user_id, content }
         : { video_id: id, user_id, content };
 

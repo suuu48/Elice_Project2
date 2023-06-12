@@ -1,5 +1,5 @@
 import { db } from '../config/dbconfig';
-import { shortsProfile, createShortsInput } from './types/shorts.entity';
+import { shortsProfile, createShortsInput } from '../models/shorts';
 
 // 유저가 작성한 동영상 조회
 export const findShortsByUser = async (user_id: number): Promise<any[]> => {

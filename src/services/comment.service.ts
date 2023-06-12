@@ -1,6 +1,6 @@
 import * as commentRepo from '../database/comment.repo';
 import { AppError } from '../../../back/src/utils/errorHandler';
-import { createCommentInput } from '../database/types/comment.entity';
+import { createCommentInput } from '../models/comment';
 
 // 댓글 상세 조회
 export const getComment = async (comment_id: number): Promise<any[]> => {

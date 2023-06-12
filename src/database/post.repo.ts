@@ -1,5 +1,5 @@
 import { db } from '../config/dbconfig';
-import { Post, createPostInput, updatePostInput } from './types/post.entity';
+import { Post, createPostInput, updatePostInput } from '../models/post';
 
 // 메인페이지 최신순 5개 조회
 export const findAllPostsByCreated = async (): Promise<any[]> => {
