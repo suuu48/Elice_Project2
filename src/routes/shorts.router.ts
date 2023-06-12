@@ -9,7 +9,7 @@ export const shortsRoute = express();
 shortsRoute.get('/', shortController.getShortsListHandler);
 
 // 쇼츠 상세 조회
-shortsRoute.get('/:shorts_id', shortController.getShortsHandler);
+shortsRoute.get('/detail/', shortController.getShortsHandler);
 
 // 쇼츠 등록 (로그인 필요)
 shortsRoute.post('/', isAccessTokenValid, uploadShorts, shortController.addShortsHandler);
