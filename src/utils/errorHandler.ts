@@ -11,12 +11,14 @@ class AppError extends Error {
 }
 
 const errorHandlerMiddleware = (err: AppError, req: Request, res: Response, next: NextFunction) => {
-  const { statusCode, message } = err;
-  res.status(statusCode || 500).json({
+  const { statusCode = 500, message = '서버에서 에러가 발생했습니다.' } = err;
+
+  res.status(statusCode).json({
     status: 'error',
-    statusCode: statusCode || 500,
-    message: message || '서버에서 에러가 발생했습니다.',
+    statusCode,
+    message,
   });
+
 };
 
 export { AppError, errorHandlerMiddleware };
