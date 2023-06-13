@@ -2,6 +2,7 @@ import express from 'express';
 import { env } from './config/envconfig';
 import { db, redisClient } from './config/dbconfig';
 import { v1Router } from './routes';
+import { errorHandlerMiddleware } from '../src/utils/errorHandler';
 import cors from 'cors';
 const port = Number(env.PORT);
 const app = express();
@@ -37,3 +38,4 @@ app.use(
 );
 
 app.use('/api/v1', v1Router);
+app.use(errorHandlerMiddleware);
