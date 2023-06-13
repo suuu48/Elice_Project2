@@ -22,11 +22,9 @@ export const getRanksHandler = async (req: Request, res: Response, next: NextFun
   try {
     const category = Number(req.params.category);
     const season = req.params.season;
-    console.log(season)
+
     if (typeof category !== 'number') throw new Error(`category 필수값임`);
     if (!season) throw new Error(`category 필수값임`);
-
-
 
     const ranks = await rankService.getRank(category, season);
 
