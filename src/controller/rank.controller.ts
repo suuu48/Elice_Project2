@@ -6,7 +6,7 @@ export const getSeasonHandler = async (req: Request, res: Response, next: NextFu
   try {
     const category = Number(req.params.category);
 
-    if (!category) throw new Error(`category 필수값임`);
+    if (typeof category !== 'number') throw new Error(`category 유효값 변경`);
 
     const seasons = await rankService.getSeason(category);
 
