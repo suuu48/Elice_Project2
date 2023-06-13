@@ -1,10 +1,21 @@
 import { env } from '../config/envconfig';
-import { Request, RequestHandler } from 'express';
-import jwt, { JwtPayload } from 'jsonwebtoken';
+import { NextFunction, Request, RequestHandler } from 'express';
+import jwt from 'jsonwebtoken';
 import { decodedToken } from '../models/user';
-//
+
+const nextForGuest = async (req: Request, next: NextFunction) => {
+  req.user = {
+    user_id: 0,
+    email: 'GUEST@gmail.com',
+    role: false,
+  };
+  next();
+};
+
 export const isAccessTokenValid: RequestHandler = (req, res, next) => {
   const userToken = req.headers['authorization']?.split(' ')[1];
+
+  if (!userToken && req.method === 'GET') return nextForGuest(req, next);
 
   if (!userToken) {
     return res.status(403).json({

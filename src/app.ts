@@ -1,7 +1,8 @@
 import express from 'express';
 import { env } from './config/envconfig';
-import { db } from './config/dbconfig';
+import { db, redisClient } from './config/dbconfig';
 import { v1Router } from './routes';
+import { errorHandlerMiddleware } from '../src/utils/errorHandler';
 import cors from 'cors';
 const port = Number(env.PORT);
 const app = express();
@@ -18,6 +19,14 @@ db.getConnection()
   })
   .catch((err) => console.log('error!!!!!!!', err));
 
+redisClient.on('connect', () => {
+  console.log('✅ Redis 연결 성공');
+});
+
+redisClient.on('error', (error) => {
+  console.log('Redis 연결 에러:', error);
+});
+
 app.use(express.json());
 
 app.use(
@@ -29,3 +38,4 @@ app.use(
 );
 
 app.use('/api/v1', v1Router);
+app.use(errorHandlerMiddleware);
