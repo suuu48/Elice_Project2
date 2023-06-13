@@ -10,17 +10,21 @@ export const getShortsList = async (category: number | undefined): Promise<any[]
   try {
     const categories = await categoryRepo.getCategoriesInfo();
 
-    const categoryExists = categories.some((category) => category.id === Number(category.category));
-    if (!categoryExists) throw new AppError(400, '유효하지 않은 카테고리입니다.');
-
     const isCategoryValid = category !== undefined && !isNaN(category);
-    const shorts = isCategoryValid
-      ? await shortsRepo.findShortsAll()
-      : await shortsRepo.findShortsByCategory(category);
 
-    if (shorts === undefined) throw new AppError(404, '쇼츠 목록이 없습니다.');
+    if (isCategoryValid) {
+      const categoryExists = categories.some((categoryObj) => categoryObj.id === Number(category));
+      if (!categoryExists) throw new AppError(400, '유효하지 않은 카테고리입니다.');
+      const shorts = await shortsRepo.findShortsByCategory(category);
+      if (shorts === undefined) throw new AppError(404, '쇼츠 목록이 없습니다.');
 
-    return shorts;
+      return shorts;
+    } else {
+      const shorts = await shortsRepo.findShortsAll();
+      if (shorts === undefined) throw new AppError(404, '쇼츠 목록이 없습니다.');
+
+      return shorts;
+    }
   } catch (error: any) {
     if (error instanceof AppError) {
       if (error.statusCode === 500) console.log(error);
