@@ -8,8 +8,14 @@ export const shortsRoute = express();
 // 최신순 목록 조회
 shortsRoute.get('/', shortController.getShortsListHandler);
 
-// 쇼츠 상세 조회
+// 메이페이지에서 디테일 페이지로(1번)
 shortsRoute.get('/detail', isAccessTokenValid, shortController.getShortsHandler);
+
+// 카테고리 페이지에서 디테일 페이지(3번)
+// shortsRoute.get('/detail/:shorts_id', isAccessTokenValid, shortController.getShortsHandler);
+
+// 카테고리페이지에서 디테일 페이지(2번)
+//shortsRoute.get('/detail/category', isAccessTokenValid, shortController.getShortsHandler);
 
 // 쇼츠 등록 (로그인 필요)
 shortsRoute.post('/', isAccessTokenValid, uploadShorts, shortController.addShortsHandler);
