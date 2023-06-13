@@ -57,7 +57,7 @@ export const findShortsAll = async (): Promise<any[]> => {
 export const findShortsByCategory = async (category: number | undefined): Promise<any[]> => {
   try {
     const [row]: any = await db.query(
-      `SELECT v.id, v.title, v.src, u.img as user_img, u.nickname, v.views
+      `SELECT v.id, v.title, v.category, v.src, u.img as user_img, u.nickname, v.views
              FROM video v
              JOIN user u ON v.user_id= u.id
              WHERE v.category = ?
