@@ -7,7 +7,7 @@ import { createPostInput, updatePostInput } from '../models/post';
 // 메인페이지 게시글 조회
 export const getPostMainHandler = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const category = Number(req.params.category);
+    const category = Number(req.query.category);
     if (category === undefined) throw new AppError(400, 'category를 입력해주세요.');
 
     const posts = await postService.getPostsMain(category);
@@ -50,11 +50,12 @@ export const getPostsByCategoryHandler = async (
 
 // 게시글 상세 조회
 export const getPostHandler = async (req: Request, res: Response, next: NextFunction) => {
+  const userId = req.user.user_id;
   try {
     const postId = Number(req.params.post_id);
     if (postId === null) throw new AppError(400, '게시글 ID를 입력해주세요.');
 
-    const post = await postService.getPost(postId);
+    const post = await postService.getPost(postId,userId);
 
     res.status(200).json({ message: '게시글 상세 조회 성공', data: post });
   } catch (error: any) {
@@ -71,12 +72,11 @@ export const getPostHandler = async (req: Request, res: Response, next: NextFunc
 // 게시글 등록
 export const addPostHandler = async (req: Request, res: Response, next: NextFunction) => {
   const userId = req.user.user_id;
-
+  if (userId === null && userId ===0) throw new AppError(400, '회원 ID가 필요합니다.');
   try {
     const { category, title, content } = req.body;
     const imgFileRoot = `${env.STATIC_PATH}/img/${req.file?.filename}`;
 
-    if (userId === null) throw new AppError(400, '회원 ID를 입력해주세요.');
 
     if (!category || !title || !content)
       throw new AppError(400, '요청 body에 모든 정보를 입력해주세요.');
@@ -106,6 +106,7 @@ export const addPostHandler = async (req: Request, res: Response, next: NextFunc
 // 게시글 수정
 export const editPostHandler = async (req: Request, res: Response, next: NextFunction) => {
   const userId = req.user.user_id;
+  if (userId === null && userId ===0) throw new AppError(400, '회원 ID가 필요합니다.');
   try {
     const post_id = Number(req.params.post_id);
     const { title, content } = req.body;
@@ -140,7 +141,7 @@ export const editPostHandler = async (req: Request, res: Response, next: NextFun
 // 게시글 삭제
 export const removePostHandler = async (req: Request, res: Response, next: NextFunction) => {
   const userId = req.user.user_id;
-
+  if (userId === null && userId ===0) throw new AppError(400, '회원 ID가 필요합니다.');
   try {
     const { post_id } = req.params;
 
@@ -163,6 +164,7 @@ export const removePostHandler = async (req: Request, res: Response, next: NextF
 // 게시글 신고
 export const reportPostHandler = async (req: Request, res: Response, next: NextFunction) => {
   const userId = req.user.user_id;
+  if (userId === null && userId ===0) throw new AppError(400, '회원 ID가 필요합니다.');
   try {
     const post_id = Number(req.params.post_id);
 
