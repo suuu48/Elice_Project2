@@ -6,7 +6,7 @@ export const getSeasonHandler = async (req: Request, res: Response, next: NextFu
   try {
     const category = Number(req.params.category);
 
-    if (typeof category !== 'number') throw new Error(`category 유효값 변경`);
+    if (typeof category !== 'number') throw new Error(`category 유효값 체크`);
 
     const seasons = await rankService.getSeason(category);
 
@@ -17,21 +17,16 @@ export const getSeasonHandler = async (req: Request, res: Response, next: NextFu
   }
 };
 
-// 시즌별 순위 조회
+// 종목 별 팀 순위 조회
 export const getRanksHandler = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const category = Number(req.params.category);
     const season = req.params.season;
-
-    if (!category) throw new Error(`category 필수값임`);
+    console.log(season)
+    if (typeof category !== 'number') throw new Error(`category 필수값임`);
     if (!season) throw new Error(`category 필수값임`);
 
-    const isSeason = await rankService.getSeason(category);
 
-    const matchingSeason = isSeason.find((item) => item.season === season);
-    if (!matchingSeason) {
-      throw new Error(`해당 종목의 시즌이 아닙니다`);
-    }
 
     const ranks = await rankService.getRank(category, season);
 
