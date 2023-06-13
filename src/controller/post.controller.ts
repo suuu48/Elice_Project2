@@ -8,7 +8,6 @@ import { createPostInput, updatePostInput } from '../models/post';
 export const getPostMainHandler = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const category = Number(req.query.category);
-    if (category === undefined) throw new AppError(400, 'category를 입력해주세요.');
 
     const posts = await postService.getPostsMain(category);
 

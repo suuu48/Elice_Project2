@@ -6,7 +6,7 @@ import { uploadImage } from '../middleware/multer';
 export const postRoute = express();
 
 // 메인페이지 게시글 조회
-postRoute.get('/main/', postController.getPostMainHandler);
+postRoute.get('/main', postController.getPostMainHandler);
 
 // 카테고리 별 게시글 목록 조회
 postRoute.get('/category/:category', postController.getPostsByCategoryHandler);
