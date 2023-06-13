@@ -2,6 +2,7 @@ import express from 'express';
 import * as shortController from '../controller/shorts.controller';
 import { isAccessTokenValid } from '../middleware/jwt';
 import { uploadShorts } from '../middleware/multer';
+import {getShortsByCategoryHandler} from "../controller/shorts.controller";
 
 export const shortsRoute = express();
 
@@ -12,10 +13,10 @@ shortsRoute.get('/', shortController.getShortsListHandler);
 shortsRoute.get('/detail', isAccessTokenValid, shortController.getShortsHandler);
 
 // 카테고리 페이지에서 디테일 페이지(3번)
-// shortsRoute.get('/detail/:shorts_id', isAccessTokenValid, shortController.getShortsHandler);
+shortsRoute.get('/detail/:shorts_id', shortController.getShortsHandler);
 
 // 카테고리페이지에서 디테일 페이지(2번)
-//shortsRoute.get('/detail/category', isAccessTokenValid, shortController.getShortsHandler);
+shortsRoute.get('/category/detail', isAccessTokenValid, shortController.getShortsByCategoryHandler);
 
 // 쇼츠 등록 (로그인 필요)
 shortsRoute.post('/', isAccessTokenValid, uploadShorts, shortController.addShortsHandler);
