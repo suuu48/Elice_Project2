@@ -3,11 +3,22 @@ import { AppError } from '../../../back/src/utils/errorHandler';
 import { createPostInput, updatePostInput } from '../models/post';
 import fs from 'fs';
 import { env } from '../config/envconfig';
+import * as categoryRepo from "../database/category.repo";
 
 // 메인페이지 최신글 조회
-export const getPostsMain = async (category: number): Promise<any[]> => {
+export const getPostsMain = async (category: number| undefined): Promise<any[]> => {
   try {
-    const posts = await postRepo.findPostsByCreated(category);
+    const categories = await categoryRepo.getCategoriesInfo();
+
+    const categoryExists = categories.some((category) => category.id === Number(category.category));
+    if (!categoryExists) throw new AppError(400, '유효하지 않은 카테고리입니다.');
+
+    const isCategoryValid = category !== undefined && !isNaN(category);
+    const posts = isCategoryValid
+        ? await postRepo.findPostsByCreated(category)
+        : await postRepo.findAllPostsByCreated();
+
+
     if (posts === undefined) throw new Error('[ 최신글 조회 에러 ] 게시글 조회 실패');
 
     return posts;
