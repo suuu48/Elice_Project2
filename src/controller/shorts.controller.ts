@@ -70,6 +70,27 @@ export const getShortsByCategoryHandler = async (req: Request, res: Response, ne
     }
   }
 };
+//3번 :  다음 쇼츠 조회
+export const getNextShortsHandler = async (req: Request, res: Response, next: NextFunction) => {
+  const user_id = req.user.user_id;
+  try {
+    const shorts_id = Number(req.params.shorts_id);
+    if(!shorts_id) throw new AppError(400, 'shorts_id는 필수값입니다!');
+
+    const detail = await shortsService.getShorts(shorts_id, user_id);
+
+    res.status(200).json({ detail: detail });
+  } catch (error: any) {
+    if (error instanceof AppError) {
+      if (error.statusCode === 404 || error.statusCode === 400) console.log(error);
+      next(error);
+    } else {
+      console.log(error);
+      next(new AppError(500, '[ HTTP 요청 에러 ] 쇼츠 상세 조회 실패'));
+    }
+  }
+};
+
 // 쇼츠 등록
 export const addShortsHandler = async (req: Request, res: Response, next: NextFunction) => {
   const user_id = req.user.user_id;

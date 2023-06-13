@@ -2,7 +2,6 @@ import express from 'express';
 import * as shortController from '../controller/shorts.controller';
 import { isAccessTokenValid } from '../middleware/jwt';
 import { uploadShorts } from '../middleware/multer';
-import {getShortsByCategoryHandler} from "../controller/shorts.controller";
 
 export const shortsRoute = express();
 
@@ -12,8 +11,8 @@ shortsRoute.get('/', shortController.getShortsListHandler);
 // 메이페이지에서 디테일 페이지로(1번)
 shortsRoute.get('/detail', isAccessTokenValid, shortController.getShortsHandler);
 
-// 카테고리 페이지에서 디테일 페이지(3번)
-shortsRoute.get('/detail/:shorts_id', shortController.getShortsHandler);
+// 쇼츠 정보 조회(3번)
+shortsRoute.get('/detail/:shorts_id', isAccessTokenValid, shortController.getNextShortsHandler);
 
 // 카테고리페이지에서 디테일 페이지(2번)
 shortsRoute.get('/category/detail', isAccessTokenValid, shortController.getShortsByCategoryHandler);
