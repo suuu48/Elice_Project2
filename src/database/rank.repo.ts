@@ -18,14 +18,11 @@ export const findSeasonByCategory = async (category: number): Promise<any> => {
   }
 };
 
-// 해당 종목의 시즌인가 확인
-//Todo: controller에서 findSeasonByCategory함수를 사용해 나온 값중에서 season이 있는지 확인했는데 이를 repo에서 sql문을 사용해서 체크하는게 나은지 모르겠음
-
 // 종목, 시즌 별 팀 순위
 export const findRankByCategory = async (category: number, season: string): Promise<any> => {
   try {
     const [row]: any = await db.query(
-      `SELECT (SELECT COUNT(*) + 1 FROM sports.rank r2 WHERE r2.season = r.season AND (r2.wins > r.wins OR (r2.wins = r.wins AND r2.points > r.points))) AS rating
+      `SELECT (SELECT COUNT(*) + 1 FROM sports.rank r2 WHERE r2.season = r.season AND (r2.wins > r.wins OR (r2.wins = r.wins AND r2.points > r2.points))) AS rating
       ,t.category, r.season, r.team_id, t.name AS team_name, t.img, r.wins, r.losses, r.drawns, r.scored, r.conceded, r.points     
       FROM \`rank\` r
       JOIN team t On t.id = r.team_id
@@ -33,7 +30,7 @@ export const findRankByCategory = async (category: number, season: string): Prom
       ORDER BY r.wins DESC, r.points DESC`,
       [category, season]
     );
-
+    console.log(row)
     return row;
   } catch (error) {
     console.log(error);

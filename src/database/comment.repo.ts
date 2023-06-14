@@ -8,7 +8,7 @@ export const findByContents = async (contents_category: number, id: number): Pro
     const whereColumns = isCategoryValid ? 'c.video_id' : 'c.post_id';
 
     const [row]: any = await db.query(
-      `SELECT u.nickname, u.img, c.content, c.created_at
+      `SELECT c.id as comment_id, u.id as user_id,u.nickname, u.img, c.content, c.created_at
            FROM comment c
            JOIN user u ON c.user_id= u.id 
            WHERE (${whereColumns}) = ?

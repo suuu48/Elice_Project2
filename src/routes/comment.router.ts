@@ -17,7 +17,7 @@ commentRoute.post('/', isAccessTokenValid, commentController.addCommentHandler);
 commentRoute.delete('/:comment_id', isAccessTokenValid, commentController.removeCommentHandler);
 
 // 댓글 신고 (로그인 필수)
-commentRoute.patch(
+commentRoute.put(
   '/report/:comment_id',
   isAccessTokenValid,
   commentController.reportCommentHandler

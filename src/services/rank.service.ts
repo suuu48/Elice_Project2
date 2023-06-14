@@ -18,7 +18,6 @@ export const getSeason = async (category: number): Promise<any[]> => {
 export const getRank = async (category: number, season: string): Promise<any> => {
   try {
     const categories = await categoryRepo.getCategoriesInfo();
-
     const categoryExists = categories.some((categoryObj) => categoryObj.id === category);
 
     if (!categoryExists) throw new AppError(400, '유효하지 않은 카테고리입니다.');

@@ -24,4 +24,4 @@ postRoute.put('/:post_id', isAccessTokenValid, uploadImage, postController.editP
 postRoute.delete('/:post_id', isAccessTokenValid, postController.removePostHandler);
 
 // 게시글 신고 (로그인 필수)
-postRoute.post('/report/:post_id', isAccessTokenValid, postController.reportPostHandler);
+postRoute.put('/report/:post_id', isAccessTokenValid, postController.reportPostHandler);

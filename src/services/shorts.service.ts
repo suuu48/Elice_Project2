@@ -4,6 +4,7 @@ import { createShortsInput } from '../models/shorts';
 import fs from 'fs';
 import * as categoryRepo from '../database/category.repo';
 import { env } from '../config/envconfig';
+import {findShortsListByCategory} from "../database/shorts.repo";
 
 // 메인/카테고리별 쇼츠 목록 조회
 export const getShortsList = async (category: number | undefined): Promise<any[]> => {
@@ -37,17 +38,13 @@ export const getShortsList = async (category: number | undefined): Promise<any[]
 };
 
 // 쇼츠 상세 조회
-export const getShorts = async (
-  shorts_id: number | undefined,
-  category: number,
-  user_id: number
-): Promise<any[]> => {
+export const getShorts = async ( shorts_id: number, user_id: number): Promise<any> => {
   try {
-    if (typeof shorts_id === 'number' && !isNaN(shorts_id)) {
       const isValid = await shortsRepo.isShortsIdValid(shorts_id);
-      if (!isValid) throw new AppError(404, '존재하는 쇼츠가 없습니다.');
+      if (!isValid) throw new AppError(204, '존재하는 쇼츠가 없습니다.');
 
       if (user_id !== 0) {
+        // 조회수 증가
         const isViews = await shortsRepo.getUserShortsViewStatus(shorts_id, user_id);
         if (isViews === 0) {
           const insertRedis = await shortsRepo.incrementShortsViewCount(shorts_id, user_id);
@@ -57,14 +54,10 @@ export const getShorts = async (
           if (views.affectedRows !== 1) throw new AppError(404, '조회수 업로드 실패');
         }
       }
-
-      const detailShorts = await shortsRepo.findShortsByIdAndCategory(shorts_id, category);
+      const detailShorts = await shortsRepo.findShortsById(shorts_id);
+      if (!detailShorts) throw new AppError(404, 'shorts 정보가 없습니다.');
 
       return detailShorts;
-    } else {
-      const detailShorts = await shortsRepo.findOneShortsByCategory(category);
-      return detailShorts;
-    }
   } catch (error: any) {
     if (error instanceof AppError) {
       if (error.statusCode === 500) console.log(error);
@@ -76,6 +69,31 @@ export const getShorts = async (
   }
 };
 
+// 쇼츠 아이디 리스트 조회
+export const getIdList = async (category: number | undefined): Promise<any> => {
+  try {
+    if (typeof category === 'number' && !isNaN(category)) {
+      // category 값이 있을 경우!
+      const idLists = await shortsRepo.findShortsListByCategory(category);
+      if (!idLists) throw new AppError(404, 'shorts_id 리스트 정보가 없습니다.');
+      return idLists;
+    } else{
+      // category 값이 없을 경우
+      const idLists = await shortsRepo.findShortsListByCreated();
+      if (!idLists) throw new AppError(404, 'shorts_id 리스트 정보가 없습니다.');
+      return idLists;
+    }
+
+  } catch (error: any) {
+    if (error instanceof AppError) {
+      if (error.statusCode === 500) console.log(error);
+      throw error;
+    } else {
+      console.log(error);
+      throw new AppError(500, '[ 서버 에러 ] 쇼츠 목록 조회 실패');
+    }
+  }
+};
 // shorts 등록
 export const addShorts = async (inputData: createShortsInput): Promise<any> => {
   try {
