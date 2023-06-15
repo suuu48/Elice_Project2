@@ -118,6 +118,6 @@ def update_schedule():
     sports_db.close()
 
     
-# 매주 월요일 새벽 1시에 작업 실행
+# 매일 새벽 1시 반에 작업 실행
 schedule.every().day.at("01:30").do(update_schedule)
 update_schedule()
