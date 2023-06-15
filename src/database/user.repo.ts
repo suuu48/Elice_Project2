@@ -1,5 +1,5 @@
 import { db } from '../config/dbconfig';
-import { createUserInput, UserProfile, UserInfo } from './types/user.entity';
+import { createUserInput, UserProfile, UserInfo } from '../models/user';
 
 // 닉네임 중복 체크
 export const checkDuplicateNickname = async (nickName: string): Promise<UserInfo> => {

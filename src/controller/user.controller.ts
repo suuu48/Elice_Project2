@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import * as userService from '../services/user.service';
-import * as User from '../database/types/user.entity';
+import * as User from '../models/user';
 import { AppError } from '../utils/errorHandler';
 
 // Todo: userId 에러처리!

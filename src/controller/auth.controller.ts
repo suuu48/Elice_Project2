@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import * as authService from '../services/auth.service';
-import { createUserInput } from '../database/types/user.entity';
+import { createUserInput } from '../models/user';
 import bcrypt from 'bcrypt';
 import * as userRepo from '../database/user.repo';
 import { AppError } from '../../../back/src/utils/errorHandler';

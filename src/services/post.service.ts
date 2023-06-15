@@ -1,15 +1,31 @@
 import * as postRepo from '../database/post.repo';
 import { AppError } from '../../../back/src/utils/errorHandler';
-import { createPostInput, updatePostInput } from '../database/types/post.entity';
+import { createPostInput, updatePostInput } from '../models/post';
 import fs from 'fs';
+import { env } from '../config/envconfig';
+import * as categoryRepo from '../database/category.repo';
+import * as shortsRepo from '../database/shorts.repo';
 
 // 메인페이지 최신글 조회
-export const getPostsMain = async (category: number): Promise<any[]> => {
+export const getPostsMain = async (category: number | undefined): Promise<any[]> => {
   try {
-    const posts = await postRepo.findPostsByCreated(category);
-    if (posts === undefined) throw new Error('[ 최신글 조회 에러 ] 게시글 조회 실패');
+    const isCategoryValid = category !== undefined && !isNaN(category);
+    if (isCategoryValid) {
+      const categories = await categoryRepo.getCategoriesInfo();
+      const categoryExists = categories.some(
+        (categoryObj) => categoryObj.id === Number(category)
+      );
+      if (!categoryExists) throw new AppError(400, '유효하지 않은 카테고리입니다.');
 
-    return posts;
+      const posts = await postRepo.findPostsByCreated(category);
+      if (posts === undefined) throw new AppError(404, '게시글 목록이 없습니다.');
+
+      return posts;
+    } else {
+      const posts = await postRepo.findAllPostsByCreated();
+      if (posts === undefined) throw new AppError(404, '게시글 목록이 없습니다.');
+      return posts;
+    }
   } catch (error: any) {
     if (error instanceof AppError) {
       if (error.statusCode === 500) console.log(error);
@@ -40,17 +56,26 @@ export const getPostsByCategory = async (category: number): Promise<any[]> => {
   }
 };
 
-// 게시글 상세 조회 (및 댓글 목록 조회)
-export const getPost = async (post_id: number): Promise<any[]> => {
+// 게시글 상세 조회
+export const getPost = async (post_id: number, user_id: number): Promise<any[]> => {
   try {
     const isValid = await postRepo.isPostIdValid(post_id);
     if (isValid === false) throw new AppError(404, '존재하는 게시글이 없습니다.');
 
+    if (user_id !== 0) {
+      const isViews = await postRepo.getUserPostViewStatus(post_id, user_id);
+
+      if (isViews === 0) {
+        const insertRedis = await postRepo.incrementPostViewCount(post_id, user_id);
+        if (!insertRedis) throw new AppError(404, 'Redis에 업로드 실패');
+
+        const views = await postRepo.viewPost(post_id);
+        if (views.affectedRows !== 1) throw new AppError(404, '조회수 업로드 실패');
+      }
+    }
+
     const post = await postRepo.findPostById(post_id);
     if (post === undefined) throw new AppError(404, '해당 게시글이 없습니다.');
-
-    const views = await postRepo.viewPost(post_id);
-    if(!views) throw new AppError(404, '조회수 업로드 실패');
 
     return post;
   } catch (error: any) {
@@ -172,9 +197,7 @@ const editImage = async (post_id: number, inputData: updatePostInput) => {
   if (foundPost.img && foundPost.img !== inputData.img) {
     const imgFileName = foundPost.img.split('/')[6];
 
-    const filePath = `/Users/subin/IdeaProjects/back/public/img/${imgFileName}`;
-    // const filePath = `서버 실행하는 로컬의 public 파일 절대경로`;
-    // const filePath = `클라우드 인스턴스 로컬의 public 파일 절대경로`;
+    const filePath = `${env.FILE_PATH}/img/${imgFileName}`;
 
     fs.unlink(filePath, (error) => {
       if (error) throw new AppError(400, '게시글 이미지 수정 중 오류가 발생했습니다.');
@@ -189,9 +212,7 @@ const removeImage = async (post_id: number) => {
   if (foundPost.img) {
     const imgFileName = foundPost.img.split('/')[6];
     console.log(imgFileName);
-    const filePath = `/Users/subin/IdeaProjects/back/public/img/${imgFileName}`;
-    // const filePath = `서버 실행하는 로컬의 public 파일 절대경로`;
-    // const filePath = `클라우드 인스턴스 로컬의 public 파일 절대경로`;
+    const filePath = `${env.FILE_PATH}/img/${imgFileName}`;
 
     fs.unlink(filePath, (error) => {
       if (error) throw new AppError(400, '게시글 이미지 삭제 중 오류가 발생했습니다.');

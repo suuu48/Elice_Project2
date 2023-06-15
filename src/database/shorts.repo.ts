@@ -1,5 +1,5 @@
-import { db } from '../config/dbconfig';
-import { shortsProfile, createShortsInput } from './types/shorts.entity';
+import { db, redisClient } from '../config/dbconfig';
+import { shortsProfile, createShortsInput } from '../models/shorts';
 
 // 유저가 작성한 동영상 조회
 export const findShortsByUser = async (user_id: number): Promise<any[]> => {
@@ -44,7 +44,7 @@ export const findShortsAll = async (): Promise<any[]> => {
       `SELECT v.id, v.title, v.src, u.img as user_img, u.nickname, v.views 
            FROM video v
            JOIN user u ON v.user_id= u.id
-           ORDER BY created_at`
+           ORDER BY created_at DESC LIMIT 10`
     );
 
     return row;
@@ -53,15 +53,16 @@ export const findShortsAll = async (): Promise<any[]> => {
     throw new Error('[ DB 에러 ] 메인페이지 쇼츠 목록 조회 실패');
   }
 };
+
 // 카테고리 별 쇼츠 목록 조회
 export const findShortsByCategory = async (category: number | undefined): Promise<any[]> => {
   try {
     const [row]: any = await db.query(
-      `SELECT v.id, v.title, v.src, u.img as user_img, u.nickname, v.views
+      `SELECT v.id, v.title, v.category, v.src, u.img as user_img, u.nickname, v.views
              FROM video v
              JOIN user u ON v.user_id= u.id
              WHERE v.category = ?
-             ORDER BY created_at`,
+            ORDER BY created_at DESC LIMIT 10`,
       [category]
     );
     return row;
@@ -70,37 +71,49 @@ export const findShortsByCategory = async (category: number | undefined): Promis
     throw new Error('[ DB 에러 ] 카테고리별 쇼츠 목록 조회 실패');
   }
 };
+// 최신순별 shorts id 목록 조회
+export const findShortsListByCreated = async (): Promise<any> => {
+  try {
+    const [row]: any = await db.query(
+        `SELECT id
+           FROM video
+           ORDER BY created_at DESC LIMIT 10`
+    );
 
-// 쇼츠 상세 조회
-export const findShortsById = async (shorts_id: number): Promise<any> => {
-    try {
-        console.log("findShortsById")
-        const [row]: any = await db.query(
-            `SELECT v.id, v.title, v.category, v.src, v.created_at, u.img as user_img, u.nickname, v.views
-             FROM video v
-             JOIN user u ON v.user_id= u.id
-             WHERE v.id =?`,
-            [shorts_id]
-        );
-
-        return row[0];
-    } catch (error) {
-        console.log(error);
-        throw new Error('[ DB 에러 ] 비디오 상세 조회 실패');
-    }
+    return row;
+  } catch (error) {
+    console.log(error);
+    throw new Error('[ DB 에러 ] 메인페이지 쇼츠 목록 조회 실패');
+  }
+};
+// 카테고리별 shorts id 목록 조회
+export const findShortsListByCategory = async (category: number): Promise<any> => {
+  try {
+    const [row]: any = await db.query(
+      `SELECT v.id
+         FROM video v
+         WHERE v.category = ?
+         ORDER BY created_at DESC LIMIT 10`,
+      [category]
+    );
+    console.log(row);
+    return row;
+  } catch (error) {
+    console.log(error);
+    throw new Error('[ DB 에러 ] 카테고리별 쇼츠 목록 조회 실패');
+  }
 };
 
-// 쇼츠 상세 조회
-export const findOneShortsByCategory = async (category: number): Promise<any> => {
+// shorts_id에 대한 쇼츠 상세 조회
+export const findShortsById = async (shorts_id: number): Promise<any> => {
   try {
-      console.log("findOneShortsByCategory")
+    console.log('findShortsById');
     const [row]: any = await db.query(
       `SELECT v.id, v.title, v.category, v.src, v.created_at, u.img as user_img, u.nickname, v.views
              FROM video v
              JOIN user u ON v.user_id= u.id
-             WHERE v.category =?
-            ORDER BY created_at DESC LIMIT 1`,
-      [category]
+             WHERE v.id =?`,
+      [shorts_id]
     );
 
     return row[0];
@@ -108,25 +121,6 @@ export const findOneShortsByCategory = async (category: number): Promise<any> =>
     console.log(error);
     throw new Error('[ DB 에러 ] 비디오 상세 조회 실패');
   }
-};
-
-// 쇼츠 상세 조회 (조회 조건에 카테고리 추가)
-export const findShortsByIdAndCategory = async (shorts_id: number,category: number): Promise<any> => {
-    try {
-        console.log("findShortsByIdAndCategory")
-        const [row]: any = await db.query(
-            `SELECT v.id, v.title, v.category, v.src, v.created_at, u.img as user_img, u.nickname, v.views
-             FROM video v
-             JOIN user u ON v.user_id= u.id
-             WHERE v.id = ? AND v.category= ?`,
-            [shorts_id, category]
-        );
-
-        return row[0];
-    } catch (error) {
-        console.log(error);
-        throw new Error('[ DB 에러 ] 비디오 상세 조회 실패');
-    }
 };
 
 // 쇼츠 등록
@@ -169,7 +163,7 @@ export const viewShorts = async (shortsId: number): Promise<any> => {
   }
 };
 
-// 게시글 삭제
+// shorts 삭제
 export const deleteShorts = async (shortsId: number): Promise<number> => {
   try {
     const [deleteShorts]: any = await db.query(
@@ -185,7 +179,7 @@ export const deleteShorts = async (shortsId: number): Promise<number> => {
   }
 };
 
-/* videoId 유효성 검사 */
+// videoId 유효성 검사
 export const isShortsIdValid = async (shortsId: number): Promise<any> => {
   try {
     const [countRows]: any = await db.query(
@@ -202,6 +196,47 @@ export const isShortsIdValid = async (shortsId: number): Promise<any> => {
   }
 };
 
+/* Redis 관련 */
+// 해당 shorts_id에 대한 user_id 삽입
+export const incrementShortsViewCount = async (
+  shorts_id: number,
+  user_id: number
+): Promise<number> => {
+  try {
+    const key = `shorts:${shorts_id}:views`;
+    const field = String(user_id);
+
+    const isViewed = await redisClient.hexists(key, field);
+    if (!isViewed) await redisClient.hset(key, field, '1');
+
+    await redisClient.expire(key, 24 * 60 * 60);
+
+    return user_id;
+  } catch (error) {
+    console.error('저장 중 오류 발생:', error);
+    throw new Error('[DB 에러] 유저 조회 실패');
+  }
+};
+// 해당 shorts_id에 대한 user_id 조회
+export const getUserShortsViewStatus = async (
+  post_id: number,
+  user_id: number
+): Promise<number> => {
+  try {
+    const key = `shorts:${post_id}:views`;
+    const field = String(user_id);
+
+    const value = await redisClient.hget(key, field);
+    if (value === null) {
+      return 0; // 조회하지 않은 경우
+    } else {
+      return parseInt(value, 10); // 조회한 경우
+    }
+  } catch (error) {
+    console.error('저장 중 오류 발생:', error);
+    throw new Error('[DB 에러] 유저 조회 실패');
+  }
+};
 /*
 export const isShortsIdValid = async (shortsId: number): Promise<boolean> => {
     try {

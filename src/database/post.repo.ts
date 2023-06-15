@@ -1,5 +1,5 @@
-import { db } from '../config/dbconfig';
-import { Post, createPostInput, updatePostInput } from './types/post.entity';
+import { db, redisClient } from '../config/dbconfig';
+import { Post, createPostInput, updatePostInput } from '../models/post';
 
 // 메인페이지 최신순 5개 조회
 export const findAllPostsByCreated = async (): Promise<any[]> => {
@@ -171,6 +171,39 @@ export const reportPost = async (postId: number): Promise<any> => {
   } catch (error) {
     console.log(error);
     throw new Error('[ DB 에러 ] 게시글 신고 실패');
+  }
+};
+export const incrementPostViewCount = async (post_id: number, user_id: number): Promise<number> => {
+  try {
+    const key = `post:${post_id}:views`;
+    const field = String(user_id);
+
+    const isViewed = await redisClient.hexists(key, field);
+    if (!isViewed) await redisClient.hset(key, field, '1');
+
+    await redisClient.expire(key, 24 * 60 * 60);
+
+    return user_id;
+  } catch (error) {
+    console.error('저장 중 오류 발생:', error);
+    throw new Error('[DB 에러] 유저 조회 실패');
+  }
+};
+
+export const getUserPostViewStatus = async (post_id: number, user_id: number): Promise<number> => {
+  try {
+    const key = `post:${post_id}:views`;
+    const field = String(user_id);
+
+    const value = await redisClient.hget(key, field);
+    if (value === null) {
+      return 0; // 조회하지 않은 경우
+    } else {
+      return parseInt(value, 10); // 조회한 경우
+    }
+  } catch (error) {
+    console.error('저장 중 오류 발생:', error);
+    throw new Error('[DB 에러] 유저 조회 실패');
   }
 };
 

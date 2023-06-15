@@ -11,6 +11,12 @@ export const env = {
   DB_PASSWORD: process.env.DB_PASSWORD,
   DB_DBNAME: process.env.DB_DBNAME,
   STATIC_PATH: process.env.STATIC_PATH,
+  FILE_PATH: process.env.FILE_PATH,
+
+  REDIS_HOST: process.env.REDIS_HOST,
+  REDIS_PORT: process.env.REDIS_PORT,
+  REDIS_USERNAME: process.env.REDIS_USERNAME,
+  REDIS_PASSWORD:process.env.REDIS_PASSWORD,
 
   JWT_SECRET_KEY: process.env.JWT_SECRET_KEY,
   ACCESS_TOKEN_SECRET: process.env.ACCESS_TOKEN_SECRET,
