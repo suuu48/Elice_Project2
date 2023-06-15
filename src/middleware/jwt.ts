@@ -24,7 +24,7 @@ export const isAccessTokenValid: RequestHandler = (req, res, next) => {
     });
   }
 
-  // token 검증
+
   try {
     const accessTokenSecret = env.ACCESS_TOKEN_SECRET || 'default-access-token-secret';
     const jwtDecoded = jwt.verify(userToken, accessTokenSecret) as decodedToken;
@@ -41,9 +41,8 @@ export const isAccessTokenValid: RequestHandler = (req, res, next) => {
         next(notAllow);
         break;
       case 'jwt expired':
-        const expired = new Error('403, 만료된 토큰입니다.');
-        //refreshTokenValid(req, res, next);
-        next(expired);
+        // const expired = new Error('403, 만료된 토큰입니다.');
+        refreshTokenValid(req, res, next);
         break;
       case 'is not access token':
         const notAT = new Error('400, AT로 인증해주시길 바랍니다. ');
@@ -55,34 +54,36 @@ export const isAccessTokenValid: RequestHandler = (req, res, next) => {
   }
 };
 
-/*
+
 const refreshTokenValid: RequestHandler = (req, res, next) => {
     try {
-        const refreshToken = req.cookies.refreshToken; //=> refresh토큰은 헤더에서 가져오는게 아님!
+        const refreshToken = req.cookies.refreshToken;
 
         if (!refreshToken) {
             throw new Error('401, 리프레시 토큰이 필요합니다.');
         }
 
         const refreshSecretKey = env.REFRESH_TOKEN_SECRET || 'default-refresh-token-secret';
-        const refreshDecoded = jwt.verify(refreshToken, refreshSecretKey) as JwtPayload; // 명시적으로 JwtPayload 타입으로 지정
+        const refreshDecoded = jwt.verify(refreshToken, refreshSecretKey) as decodedToken;
         console.log(refreshDecoded);
 
         // 리프레시 토큰이 정상적으로 검증되면 액세스 토큰을 재발급
         const payload = {
-            email: refreshDecoded.email,
-            password: refreshDecoded.password,
+          user_id: refreshDecoded.user_id,
+          email: refreshDecoded.email,
+          role: refreshDecoded.role
         };
+
         const secretKey = env.ACCESS_TOKEN_SECRET || 'default-access-token-secret';
         const expiresIn = env.ACCESS_TOKEN_EXPIRES_IN;
 
         const newAccessToken = jwt.sign(payload, secretKey, { expiresIn });
 
-        req.body = { ...req.body, jwtDecoded: { ...refreshDecoded, newAccessToken } };
-        console.log(req.body);
+        req.user = payload;
+
         next();
     } catch (refreshError: any) {
         const refreshTokenError = new Error('401, 리프레시 토큰이 만료되었거나 유효하지 않습니다.');
         next(refreshTokenError);
     }
-};*/
+};
