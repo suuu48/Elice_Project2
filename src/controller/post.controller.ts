@@ -77,7 +77,7 @@ export const addPostHandler = async (req: Request, res: Response, next: NextFunc
     const imgFileRoot = `${env.STATIC_PATH}/img/${req.file?.filename}`;
 
 
-    if (!category || !title || !content)
+    if (category === undefined || !title || !content)
       throw new AppError(400, '요청 body에 모든 정보를 입력해주세요.');
 
     const postData: createPostInput = {
