@@ -3,7 +3,6 @@ import * as userService from '../services/user.service';
 import * as User from '../models/user';
 import { AppError } from '../utils/errorHandler';
 
-// Todo: userId 에러처리!
 // 유저 정보 조회
 export const getUserInfo = async (req: Request, res: Response, next: NextFunction) => {
   const userId = req.user.user_id;

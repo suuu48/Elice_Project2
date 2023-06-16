@@ -32,7 +32,7 @@ export const updateUserInfo = async (
 
     if (updateData.interest) {
       const categoryExists = categories.some(
-        (category) => category.id === Number(updateData.interest)
+        (categoryObj) => categoryObj.id === Number(updateData.interest)
       );
       if (!categoryExists) {
         throw new AppError(400, '유효하지 않은 카테고리입니다.');
